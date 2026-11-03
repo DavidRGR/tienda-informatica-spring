@@ -11,7 +11,7 @@ Proyecto de portfolio: una tienda online de componentes y periféricos informát
 - Un usuario puede tener ambos roles
 
 ## Tecnologías
-Java 25 · Spring Boot 4.1 · Spring Security · Hibernate/JPA · AspectJ · PostgreSQL · Maven
+Java 25 · Spring Boot 4.1 · Spring Security · Hibernate/JPA · AspectJ · PostgreSQL · Maven · Lombok
 
 ## Modelo de datos
 
