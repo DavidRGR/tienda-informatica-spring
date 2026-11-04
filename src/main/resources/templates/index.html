@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Página de inicio</title>
+</head>
+<body>
+
+	<h1>Bienvenido a esta tienda Spring Boot</h1>
+
+	<a href="/login">Ir a la página de iniciar sesión</a>
+
+	<form th:action="@{/logout}" method="post">
+		<button type="submit">Cerrar sesión</button>
+	</form>
+</body>
+</html>

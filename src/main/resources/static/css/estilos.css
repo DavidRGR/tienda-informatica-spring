@@ -1,0 +1,117 @@
+:root {
+	--tienda-naranja: #ff6000;
+	--tienda-naranja-oscuro: #e05500;
+	--tienda-texto: #2b2b2b;
+}
+
+body.login-pagina {
+	background: #fff;
+	color: var(--tienda-texto);
+}
+
+/* Logo */
+.login-logo {
+	font-size: 2rem;
+	font-weight: 800;
+	color: var(--tienda-texto);
+	letter-spacing: -0.5px;
+}
+.login-logo i,
+.login-logo span {
+	color: var(--tienda-naranja);
+}
+
+/* Estructura de dos columnas */
+.login-contenedor {
+	max-width: 960px;
+}
+.login-beneficios {
+	border-right: 1px solid #dee2e6;
+	padding-right: 3rem;
+}
+.login-formulario {
+	padding-left: 3rem;
+}
+@media (max-width: 767.98px) {
+	.login-formulario {
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+	}
+}
+
+/* Ventajas */
+.beneficio {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+.beneficio i {
+	font-size: 2.2rem;
+	color: var(--tienda-naranja);
+	line-height: 1;
+}
+.beneficio h2 {
+	font-size: 1.1rem;
+	font-weight: 700;
+	margin-bottom: 0.25rem;
+}
+.beneficio p {
+	margin: 0;
+	color: #555;
+	font-size: 0.95rem;
+}
+
+/* Formulario */
+.login-formulario h1 {
+	font-weight: 800;
+	font-size: 1.9rem;
+	margin-bottom: 1.5rem;
+}
+.login-formulario .form-control:focus {
+	border-color: var(--tienda-naranja);
+	box-shadow: 0 0 0 0.2rem rgba(255, 96, 0, 0.2);
+}
+.campo-password {
+	position: relative;
+}
+.boton-ojo {
+	position: absolute;
+	top: 50%;
+	right: 0.75rem;
+	transform: translateY(-50%);
+	border: none;
+	background: none;
+	color: #555;
+	font-size: 1.2rem;
+	z-index: 5;
+}
+
+/* Botones */
+.btn-tienda {
+	background-color: var(--tienda-naranja);
+	border-color: var(--tienda-naranja);
+	color: #fff;
+	font-weight: 600;
+}
+.btn-tienda:hover,
+.btn-tienda:focus {
+	background-color: var(--tienda-naranja-oscuro);
+	border-color: var(--tienda-naranja-oscuro);
+	color: #fff;
+}
+
+/* Separador con texto */
+.separador {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin: 1.75rem 0;
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+.separador::before,
+.separador::after {
+	content: "";
+	flex: 1;
+	border-top: 1px solid #dee2e6;
+}
