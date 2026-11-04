@@ -1,17 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Página de inicio</title>
-</head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Inicio')}"></head>
+
 <body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
 
-	<h1>Bienvenido a esta tienda Spring Boot</h1>
+<header class="hero text-white text-center">
+	<div class="container">
+		<h1 class="display-5">Todo para tu PC, en un solo sitio</h1>
+		<p class="lead mb-4">Componentes, periféricos y más. Explora el catálogo por categorías.</p>
+		<a th:href="@{/articulos}" class="btn btn-tienda btn-lg px-4">Ver catálogo</a>
+	</div>
+</header>
 
-	<a href="/login">Ir a la página de iniciar sesión</a>
+<main class="container my-5">
+	<h2 class="h4 fw-bold mb-4">Categorías</h2>
+	<div class="row g-3">
+		<div class="col-6 col-md-4 col-lg-3" th:each="cat : ${categorias}">
+			<a th:href="@{/articulos(categoria=${cat.idCategoria})}"
+			   class="card h-100 text-decoration-none text-reset shadow-sm">
+				<div class="card-body">
+					<h3 class="h6 fw-bold mb-1" th:text="${cat.nombre}">Categoría</h3>
+					<p class="small text-muted mb-0"
+					   th:text="${cat.subcategorias.size()} + ' subcategorías'">0 subcategorías</p>
+				</div>
+			</a>
+		</div>
+	</div>
+</main>
 
-	<form th:action="@{/logout}" method="post">
-		<button type="submit">Cerrar sesión</button>
-	</form>
+<script th:replace="~{fragments/base :: scripts}"></script>
 </body>
 </html>

@@ -115,3 +115,14 @@ body.login-pagina {
 	flex: 1;
 	border-top: 1px solid #dee2e6;
 }
+.texto-tienda {
+	color: var(--tienda-naranja);
+}
+
+.hero {
+	background: linear-gradient(135deg, #1b1b1b 0%, #3a3a3a 100%);
+	padding: 5rem 0;
+}
+.hero h1 {
+	font-weight: 800;
+}
