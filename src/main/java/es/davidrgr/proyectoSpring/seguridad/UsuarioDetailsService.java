@@ -30,13 +30,14 @@ public class UsuarioDetailsService implements UserDetailsService {
 		Usuario usuario = usuarioRepository.findByCorreo(correo).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
 		//Con este metodo conseguimos una lista de autoridades (Los roles de usuario que utiliza y entiende Spring)
-		List<SimpleGrantedAuthority> autoridades = usuario.getRoles().stream() //Con esto convertimos los roles en un stream para poder mapearlos
-				.map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre())) //Los mapeamos y los convertimos a autoridades (Roles)
-				.toList(); //Los pasamos a una lista
+		//Con esto convertimos los roles en un stream para poder mapearlos
+		List<SimpleGrantedAuthority> autoridades = usuario.getRoles().stream()
+				//Los mapeamos y los convertimos a autoridades (Roles)
+				.map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre()))
+				//Los pasamos a una lista
+				.toList();
 
-		return User.withUsername(usuario.getCorreo()) //Retornamos el usuario con los campos necesarios para Spring para construirlo
-				.password(usuario.getPasswordHash())
-				.authorities(autoridades)
-				.build();
+		//Retornamos el usuario con los campos necesarios para Spring para construirlo
+		return new UsuarioAutenticado(usuario.getCorreo(), usuario.getPasswordHash(), autoridades, usuario.getNombre());
 	}
 }

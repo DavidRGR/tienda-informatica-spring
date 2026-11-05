@@ -48,6 +48,12 @@
 			<div th:if="${param.logout}" class="alert alert-success" role="alert">
 				Has cerrado sesión.
 			</div>
+			<div th:if="${param.registrado}" class="alert alert-success" role="alert">
+				Cuenta creada. Ya puedes iniciar sesión.
+			</div>
+			<div th:if="${param.rolAnadido}" class="alert alert-success" role="alert">
+				Rol añadido a tu cuenta. Inicia sesión con tu contraseña de siempre.
+			</div>
 
 			<form th:action="@{/login}" method="post">
 				<div class="form-floating mb-3">
@@ -69,9 +75,13 @@
 				<button type="submit" class="btn btn-tienda w-100 py-2">Iniciar sesión</button>
 			</form>
 
-			<div class="separador">¿Solo quieres mirar?</div>
+			<div class="separador">¿Eres nuevo cliente?</div>
+			<a th:href="@{/registro}" class="btn btn-outline-secondary w-100 py-2 mb-2">Crear cuenta</a>
+			<a th:href="@{/}" class="btn btn-link w-100 text-muted">Ver la tienda sin iniciar sesión</a>
+			<a th:href="@{/registro-admin}" class="btn btn-link w-100 text-muted small">
+				<i class="bi bi-briefcase"></i> Acceso de empleados
+			</a>
 
-			<a th:href="@{/}" class="btn btn-outline-secondary w-100 py-2">Ver la tienda</a>
 		</div>
 
 	</div>

@@ -12,6 +12,10 @@ import java.util.Optional;
 //findAll(): lista todos.
 //deleteById(id) y count().
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-//Metodo derivado del findBy, se le pasa la clase en la que buscar y el parametro correo para que busque con él
+
+	//Metodo que permite comprobar si un usuario existe por su correo (En caso de existir devuelve True)
+	boolean existsByCorreo(String correo);
+
+	//Metodo derivado del findBy, se le pasa la clase en la que buscar y el parametro correo para que busque con él
 	Optional<Usuario> findByCorreo(String correo);
 }

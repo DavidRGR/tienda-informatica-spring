@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Crear cuenta')}"></head>
+
+<body class="login-pagina">
+
+<div class="container py-5">
+
+	<div class="text-center mb-5">
+		<a th:href="@{/}" class="login-logo text-decoration-none">
+			<i class="bi bi-pc-display-horizontal"></i> Tienda<span>PC</span>
+		</a>
+	</div>
+
+	<div class="row mx-auto login-contenedor">
+
+		<div class="col-md-6 d-none d-md-block login-beneficios">
+			<div class="beneficio">
+				<i class="bi bi-person-check"></i>
+				<div>
+					<h2>Cuenta de comprador</h2>
+					<p>Con tu cuenta podrás usar el carrito y simular tus compras.</p>
+				</div>
+			</div>
+			<div class="beneficio">
+				<i class="bi bi-lock"></i>
+				<div>
+					<h2>Contraseña protegida</h2>
+					<p>Tu contraseña se guarda encriptada, nunca en texto plano.</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6 login-formulario">
+			<h1 th:text="${modoAdmin} ? 'Cuenta de administrador' : 'Crear cuenta'">Crear cuenta</h1>
+
+			<p class="small text-muted">
+				¿Ya tienes cuenta con este correo? Escríbelo con tu contraseña actual en los dos campos
+				y se añadirá este rol a tu cuenta existente.
+			</p>
+
+			<form th:action="${modoAdmin} ? @{/registro-admin} : @{/registro}" th:object="${registroForm}" method="post" novalidate>
+
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="nombre" th:field="*{nombre}"
+						   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+						   placeholder="Nombre" autofocus>
+					<label for="nombre">Nombre*</label>
+					<div class="invalid-feedback" th:errors="*{nombre}"></div>
+				</div>
+
+				<div class="form-floating mb-3">
+					<input type="email" class="form-control" id="correo" th:field="*{correo}"
+						   th:classappend="${#fields.hasErrors('correo')} ? 'is-invalid'"
+						   placeholder="Correo electrónico">
+					<label for="correo">Correo electrónico*</label>
+					<div class="invalid-feedback" th:errors="*{correo}"></div>
+				</div>
+
+				<div class="form-floating mb-3 campo-password">
+					<input type="password" class="form-control" id="password" th:field="*{password}"
+						   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+						   placeholder="Contraseña">
+					<label for="password">Contraseña* (mín. 8 caracteres)</label>
+					<button type="button" class="boton-ojo" data-ver="password"
+							aria-label="Mostrar u ocultar contraseña"><i class="bi bi-eye"></i></button>
+					<div class="invalid-feedback" th:errors="*{password}"></div>
+				</div>
+
+				<div class="form-floating mb-4 campo-password">
+					<input type="password" class="form-control" id="confirmarPassword" th:field="*{confirmarPassword}"
+						   th:classappend="${#fields.hasErrors('confirmarPassword')} ? 'is-invalid'"
+						   placeholder="Repite la contraseña">
+					<label for="confirmarPassword">Repite la contraseña*</label>
+					<button type="button" class="boton-ojo" data-ver="confirmarPassword"
+							aria-label="Mostrar u ocultar contraseña"><i class="bi bi-eye"></i></button>
+					<div class="invalid-feedback" th:errors="*{confirmarPassword}"></div>
+				</div>
+
+				<div class="form-floating mb-4" th:if="${modoAdmin}">
+					<input type="password" class="form-control" id="codigoAdmin" th:field="*{codigoAdmin}"
+						   th:classappend="${#fields.hasErrors('codigoAdmin')} ? 'is-invalid'"
+						   placeholder="Código de empleados">
+					<label for="codigoAdmin">Código de empleados*</label>
+					<div class="invalid-feedback" th:errors="*{codigoAdmin}"></div>
+				</div>
+
+				<button type="submit" class="btn btn-tienda w-100 py-2">Crear cuenta</button>
+			</form>
+
+			<div class="separador">¿Ya tienes cuenta?</div>
+			<a th:href="@{/login}" class="btn btn-outline-secondary w-100 py-2">Iniciar sesión</a>
+		</div>
+	</div>
+</div>
+
+<script>
+    document.querySelectorAll('.boton-ojo').forEach(boton => {
+        boton.addEventListener('click', () => {
+            const campo = document.getElementById(boton.dataset.ver);
+            const icono = boton.querySelector('i');
+            const visible = campo.type === 'text';
+            campo.type = visible ? 'password' : 'text';
+            icono.className = visible ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+    });
+</script>
+</body>
+</html>
