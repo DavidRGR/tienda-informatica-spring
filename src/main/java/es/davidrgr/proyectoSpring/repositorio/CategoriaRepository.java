@@ -6,6 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+//Hereda de la interfaz JpaRepository y se le pasan entre <> la clase Categoria y el tipo de su id (Long)
+// Esto permite implementar metodos tales como:
+// save(categoria): inserta o actualiza.
+//findById(id): busca por clave primaria.
+//findAll(): lista todos.
+//deleteById(id) y count().
 public interface CategoriaRepository extends JpaRepository<Categoria,Long> {
 
 	@EntityGraph(attributePaths = "subcategorias")

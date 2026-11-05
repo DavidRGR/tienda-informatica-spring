@@ -19,11 +19,17 @@ public class ConfiguracionSeguridad {
 	}
 
 	//Se encarga de la configuración de seguridad y sobre cual rol puede acceder a determinadas partes de la aplicación
+	//En la primera linea autoriza a todas esas carpetas y sus consiguientes subcarpetas para que cualquier usuario con el rol que sea pueda acceder
+	//En la segunda linea asigna que /admin y todas las carpetas que desciendan de el deberan pertenecer a usuarios con el rol de ADMIN
+	//En la tercer linea asigna que /carrito y todas las carpetas que desciendan de el deberan pertenecer a usuarios con el rol de COMPRADOR
+	//Configura la pagina de inicio en la direccion /login, se encarga de utilizar correo como parametro de busqueda y devolver / (la dirección por defecto) en caso de estar correcto
+	//Permite todas las conexiones de logout y redirecciona al inicio /
+	//Para terminar devuelve la cadena http segura y construida
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/","/login","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll() //A todas estas uris pueden acceder todos los usuarios
+						.requestMatchers("/","/login","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN") //A todas las uris que comiencen por admin solo podrán acceder usuarios con el Rol de administrador
 						.requestMatchers("/carrito/**").hasRole("COMPRADOR") // A todas las uris de carrito solo podrán acceder usuarios con el Rol de COMPRADOR
 						.anyRequest().authenticated()) //Todas las peticiones deberán autenticarse
