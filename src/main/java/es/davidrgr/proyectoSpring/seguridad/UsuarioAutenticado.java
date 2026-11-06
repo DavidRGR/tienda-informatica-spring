@@ -10,8 +10,10 @@ public class UsuarioAutenticado extends User {
 
 	private final String nombre;
 
-	public UsuarioAutenticado(String correo, String passwordHash, Collection<? extends GrantedAuthority> autoridades, String nombre) {
-		super(correo, passwordHash, autoridades);
+	public UsuarioAutenticado(String correo, String passwordHash,
+							  Collection<? extends GrantedAuthority> autoridades,
+							  String nombre, boolean bloqueada) {
+		super(correo, passwordHash, true, true, true, !bloqueada, autoridades);
 		this.nombre = nombre;
 	}
 

@@ -2,6 +2,7 @@ package es.davidrgr.proyectoSpring.seguridad;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,30 +24,34 @@ public class ConfiguracionSeguridad {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http
 				//Metodo para configurar a que ruta se podra acceder con cada rol
+				// Autoriza todas las carpetas publicas para que cualquiera pueda acceder
+				// Asigna las carpetas /admin y sus subcarpetas para que solo usuarios con el rol de Admin puedan acceder a ellas
+				// Asigna las carpetas /carrito y sus subcarpetas para que solo usuarios con el rol de Comprador puedan acceder a ellas
+				//Todas las peticiones deberán autenticarse
 				.authorizeHttpRequests(auth -> auth
-						// Autoriza todas las carpetas publicas para que cualquiera pueda acceder
 						.requestMatchers("/","/login","/registro","/registro-admin","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll()
-						// Asigna las carpetas /admin y sus subcarpetas para que solo usuarios con el rol de Admin puedan acceder a ellas
 						.requestMatchers("/admin/**").hasRole("ADMIN")
-						// Asigna las carpetas /carrito y sus subcarpetas para que solo usuarios con el rol de Comprador puedan acceder a ellas
 						.requestMatchers("/carrito/**").hasRole("COMPRADOR")
-						//Todas las peticiones deberán autenticarse
 						.anyRequest().authenticated())
 				//Con este metodo configuramos el login de la página
+				// Asignamos la pagina de login
+				//Asignamos el correo como parametro para buscar
+				//En caso de ser correcto el login, redirigimos al index
+				// Permitimos todas las conexiones
 				.formLogin(form -> form
-						// Asignamos la pagina de login
 						.loginPage("/login")
-						//Asignamos el correo como parametro para buscar
 						.usernameParameter("correo")
-						//En caso de ser correcto el login, redirigimos al index
 						.defaultSuccessUrl("/", true)
-						// Permitimos todas las conexiones
+						.failureHandler((request, response, excepcion) -> {
+							String destino = (excepcion instanceof LockedException) ? "/login?bloqueado" : "/login?error";
+							response.sendRedirect(request.getContextPath() + destino);
+						})
 						.permitAll())
 				//Con este metodo configuramos el logout
+				//Si tiene exito redirije al index
+				//Permite todas las conexiones
 				.logout(logout -> logout
-						//Si tiene exito redirije al index
 						.logoutSuccessUrl("/")
-						//Permite todas las conexiones
 						.permitAll());
 
 		//Construimos la cadena http segura y la retornamos

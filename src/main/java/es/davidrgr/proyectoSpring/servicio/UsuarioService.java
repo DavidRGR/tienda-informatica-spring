@@ -5,6 +5,7 @@ import es.davidrgr.proyectoSpring.modelo.Rol;
 import es.davidrgr.proyectoSpring.modelo.Usuario;
 import es.davidrgr.proyectoSpring.repositorio.RolRepository;
 import es.davidrgr.proyectoSpring.repositorio.UsuarioRepository;
+import es.davidrgr.proyectoSpring.seguridad.LimitadorIntentos;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,10 @@ import java.util.Optional;
 public class UsuarioService {
 
 	// Opciones que pueden salir al intentar registrar un usuario
-	public enum ResultadoRegistro { CREADO, ROL_ANADIDO, PASSWORD_INCORRECTA, YA_TIENE_ROL }
+	public enum ResultadoRegistro { CREADO, ROL_ANADIDO, PASSWORD_INCORRECTA, YA_TIENE_ROL, BLOQUEADO }
+
+	//Inyeccion del limitador de intentos
+	private final LimitadorIntentos limitador;
 
 	// Accedemos a los repositorios de usuario y rol
 	private final UsuarioRepository usuarioRepository;
@@ -25,10 +29,11 @@ public class UsuarioService {
 	// Accedemos al codificador de contraseñas
 	private final PasswordEncoder passwordEncoder;
 
-	public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder) {
+	public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder, LimitadorIntentos limitador) {
 		this.usuarioRepository = usuarioRepository;
 		this.rolRepository = rolRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.limitador = limitador;
 	}
 
 	// Metodo para registrar o asignar Rol
@@ -39,7 +44,7 @@ public class UsuarioService {
 				.orElseThrow(() -> new IllegalStateException("No existe el rol " + nombreRol + " en la base de datos"));
 
 		// Busca al usuario por el correo
-		String correo = form.getCorreo().trim().toLowerCase();
+		String correo = form.getCorreo().trim().toLowerCase(Locale.ROOT);
 		Optional<Usuario> existente = usuarioRepository.findByCorreo(correo);
 
 		// Si existe
@@ -47,10 +52,17 @@ public class UsuarioService {
 			// Le consigue
 			Usuario usuario = existente.get();
 
+			// Cuenta bloqueada: se rechaza incluso con la contraseña correcta
+			if (limitador.estaBloqueado(correo)) {
+				return ResultadoRegistro.BLOQUEADO;
+			}
+
 			// Solo el dueño de la cuenta puede añadirle un rol
 			if (!passwordEncoder.matches(form.getPassword(), usuario.getPasswordHash())) {
+				limitador.registrarFallo(correo);
 				return ResultadoRegistro.PASSWORD_INCORRECTA;
 			}
+			limitador.reiniciar(correo);
 			boolean yaTieneRol = usuario.getRoles().stream()
 					.anyMatch(r -> r.getNombre().equals(nombreRol));
 			if (yaTieneRol) {

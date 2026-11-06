@@ -54,6 +54,9 @@
 			<div th:if="${param.rolAnadido}" class="alert alert-success" role="alert">
 				Rol añadido a tu cuenta. Inicia sesión con tu contraseña de siempre.
 			</div>
+			<div th:if="${param.bloqueado}" class="alert alert-warning" role="alert">
+				Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos.
+			</div>
 
 			<form th:action="@{/login}" method="post">
 				<div class="form-floating mb-3">

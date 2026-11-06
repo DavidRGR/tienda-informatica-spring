@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Catálogo')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+
+	<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+		<div>
+			<h1 class="h3 fw-bold mb-0" th:text="${titulo}">Título</h1>
+			<span class="text-muted small" th:text="${pagina.totalElements} + ' artículos'">0 artículos</span>
+		</div>
+
+		<form method="get" th:action="@{/articulos}" class="d-flex align-items-center gap-2">
+			<input type="hidden" name="categoria" th:if="${idCategoria != null}" th:value="${idCategoria}">
+			<input type="hidden" name="subcategoria" th:if="${idSubcategoria != null}" th:value="${idSubcategoria}">
+			<label for="orden" class="small text-muted mb-0">Ordenar por</label>
+			<select name="orden" id="orden" class="form-select form-select-sm w-auto"
+					onchange="this.form.submit()">
+				<option value="nombre" th:selected="${orden == 'nombre'}">Nombre</option>
+				<option value="precio-asc" th:selected="${orden == 'precio-asc'}">Precio: menor a mayor</option>
+				<option value="precio-desc" th:selected="${orden == 'precio-desc'}">Precio: mayor a menor</option>
+			</select>
+		</form>
+	</div>
+
+	<div th:if="${pagina.isEmpty()}" class="alert alert-info">
+		No hay artículos que mostrar en esta sección.
+	</div>
+
+	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+		<div class="col" th:each="a : ${pagina.content}">
+			<div class="card tarjeta-articulo h-100">
+				<div class="tarjeta-img-contenedor">
+					<img th:src="@{${a.src()}}" th:alt="${a.nombre()}" class="tarjeta-img" loading="lazy">
+				</div>
+				<div class="card-body d-flex flex-column">
+					<span class="tarjeta-marca" th:text="${a.marca()}">MARCA</span>
+					<h2 class="tarjeta-nombre" th:text="${a.nombre()}">Nombre del artículo</h2>
+					<div class="mt-auto">
+						<div class="tarjeta-precio"
+							 th:text="${#numbers.formatDecimal(a.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+						<span th:if="${a.stock() > 0}" class="small text-success">
+							<i class="bi bi-check-circle"></i> En stock
+						</span>
+						<span th:unless="${a.stock() > 0}" class="small text-danger">
+							<i class="bi bi-x-circle"></i> Sin stock
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<nav th:if="${pagina.totalPages > 1}" class="mt-5" aria-label="Paginación">
+		<ul class="pagination justify-content-center flex-wrap">
+			<li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number - 1})}">&laquo;</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+				th:classappend="${i == pagina.number} ? 'active'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${i})}" th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number + 1})}">&raquo;</a>
+			</li>
+		</ul>
+	</nav>
+</main>
+
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

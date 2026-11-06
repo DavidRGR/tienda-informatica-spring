@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UsuarioDetailsService implements UserDetailsService {
@@ -18,16 +19,23 @@ public class UsuarioDetailsService implements UserDetailsService {
 	//Accedemos al usuarioRepository para poder trabajar con el
 	private final UsuarioRepository usuarioRepository;
 
-	public UsuarioDetailsService(UsuarioRepository usuarioRepository) {
+	//Inyeccion del limitador de intentos
+	private final LimitadorIntentos limitador;
+
+	public UsuarioDetailsService(UsuarioRepository usuarioRepository, LimitadorIntentos limitador) {
 		this.usuarioRepository = usuarioRepository;
+		this.limitador = limitador;
 	}
 
 	//Con este metodo cargamos los usuarios a partir de su correo
 	@Override
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+		// Normalizamos el correo
+		String correoNormalizado = correo.trim().toLowerCase(Locale.ROOT);
+
 		//Buscamos al usuario por su correo y en caso de que falle lanzamos la excepción usuario no encontrado
-		Usuario usuario = usuarioRepository.findByCorreo(correo).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+		Usuario usuario = usuarioRepository.findByCorreo(correoNormalizado).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
 		//Con este metodo conseguimos una lista de autoridades (Los roles de usuario que utiliza y entiende Spring)
 		//Con esto convertimos los roles en un stream para poder mapearlos
@@ -38,6 +46,11 @@ public class UsuarioDetailsService implements UserDetailsService {
 				.toList();
 
 		//Retornamos el usuario con los campos necesarios para Spring para construirlo
-		return new UsuarioAutenticado(usuario.getCorreo(), usuario.getPasswordHash(), autoridades, usuario.getNombre());
+		return new UsuarioAutenticado(
+				usuario.getCorreo(),
+				usuario.getPasswordHash(),
+				autoridades,
+				usuario.getNombre(),
+				limitador.estaBloqueado(correoNormalizado));
 	}
 }

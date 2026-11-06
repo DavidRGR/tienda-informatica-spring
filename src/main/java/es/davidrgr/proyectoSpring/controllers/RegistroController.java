@@ -50,6 +50,11 @@ public class RegistroController {
 			case ROL_ANADIDO -> {
 				return "redirect:/login?rolAnadido";
 			}
+			case BLOQUEADO -> {
+				result.rejectValue("password", "bloqueado",
+						"Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos");
+				return "registro";
+			}
 			default -> {
 				return "redirect:/login?registrado";
 			}
