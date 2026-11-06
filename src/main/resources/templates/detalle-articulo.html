@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${articulo.nombre()})}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+
+	<!-- Migas de pan -->
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb small">
+			<li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+			<li class="breadcrumb-item">
+				<a th:href="@{/articulos(categoria=${articulo.idCategoria()})}" th:text="${articulo.categoria()}">Categoría</a>
+			</li>
+			<li class="breadcrumb-item" th:if="${articulo.tieneSubcategoria()}">
+				<a th:href="@{/articulos(subcategoria=${articulo.idSubcategoria()})}" th:text="${articulo.subcategoria()}">Subcategoría</a>
+			</li>
+			<li class="breadcrumb-item active" aria-current="page" th:text="${articulo.nombre()}">Artículo</li>
+		</ol>
+	</nav>
+
+	<div class="row g-4">
+
+		<!-- Foto -->
+		<div class="col-md-6">
+			<div class="detalle-img-contenedor">
+				<img th:src="@{${articulo.src()}}" th:alt="${articulo.nombre()}" class="detalle-img"
+					 onerror="this.onerror=null; this.src='/img/sin-imagen.svg'">
+			</div>
+		</div>
+
+		<!-- Información y compra -->
+		<div class="col-md-6">
+			<span class="tarjeta-marca" th:text="${articulo.marca()}">MARCA</span>
+			<h1 class="h3 fw-bold my-2" th:text="${articulo.nombre()}">Nombre del artículo</h1>
+
+			<div class="detalle-precio mb-2"
+				 th:text="${#numbers.formatDecimal(articulo.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+
+			<!-- Disponibilidad -->
+			<p class="mb-3">
+				<span th:if="${articulo.stock() > 5}" class="text-success">
+					<i class="bi bi-check-circle"></i> En stock
+				</span>
+				<span th:if="${articulo.stock() > 0 and articulo.stock() <= 5}" class="text-warning">
+					<i class="bi bi-exclamation-circle"></i>
+					Últimas <span th:text="${articulo.stock()}">3</span> unidades
+				</span>
+				<span th:if="${articulo.stock() <= 0}" class="text-danger">
+					<i class="bi bi-x-circle"></i> Sin stock
+				</span>
+			</p>
+
+			<!-- Compra -->
+			<div th:if="${articulo.stock() > 0}">
+				<form th:if="${esComprador}" th:action="@{/carrito/agregar/{id}(id=${articulo.id()})}"
+					  method="post" class="d-flex gap-2 mb-3">
+					<select name="cantidad" class="form-select w-auto" aria-label="Cantidad">
+						<option th:each="n : ${#numbers.sequence(1, articulo.maxCantidad())}"
+								th:value="${n}" th:text="${n}">1</option>
+					</select>
+					<button type="submit" class="btn btn-tienda px-4">
+						<i class="bi bi-cart-plus"></i> Añadir al carrito
+					</button>
+				</form>
+
+				<a th:if="${!autenticado}" th:href="@{/login}" class="btn btn-tienda px-4 mb-3">
+					<i class="bi bi-box-arrow-in-right"></i> Inicia sesión para comprar
+				</a>
+
+				<div th:if="${autenticado and !esComprador}" class="alert alert-secondary small">
+					Tu cuenta no tiene el rol de comprador, así que no puedes añadir artículos al carrito.
+				</div>
+			</div>
+
+			<!-- Descripción -->
+			<h2 class="h5 mt-4">Descripción</h2>
+			<p class="descripcion-articulo" th:if="${articulo.tieneDescripcion()}"
+			   th:text="${articulo.descripcion()}">Descripción</p>
+			<p class="text-muted" th:unless="${articulo.tieneDescripcion()}">
+				Este artículo todavía no tiene descripción.
+			</p>
+		</div>
+	</div>
+</main>
+
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

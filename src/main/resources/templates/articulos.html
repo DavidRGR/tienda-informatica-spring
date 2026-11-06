@@ -38,7 +38,10 @@
 				</div>
 				<div class="card-body d-flex flex-column">
 					<span class="tarjeta-marca" th:text="${a.marca()}">MARCA</span>
-					<h2 class="tarjeta-nombre" th:text="${a.nombre()}">Nombre del artículo</h2>
+					<h2 class="tarjeta-nombre">
+						<a th:href="@{/articulos/{id}(id=${a.id()})}" class="stretched-link text-reset text-decoration-none"
+						   th:text="${a.nombre()}">Nombre del artículo</a>
+					</h2>
 					<div class="mt-auto">
 						<div class="tarjeta-precio"
 							 th:text="${#numbers.formatDecimal(a.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
