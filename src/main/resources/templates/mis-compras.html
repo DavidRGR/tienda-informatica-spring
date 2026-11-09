@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Mis compras')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<h1 class="h3 fw-bold mb-4">Mis compras</h1>
+
+	<div th:if="${compras.isEmpty()}" class="text-center py-5">
+		<i class="bi bi-bag display-3 text-muted"></i>
+		<p class="lead mt-3">Todavía no has hecho ninguna compra</p>
+		<a th:href="@{/articulos}" class="btn btn-tienda px-4">Ver el catálogo</a>
+	</div>
+
+	<div class="table-responsive" th:unless="${compras.isEmpty()}">
+		<table class="table align-middle">
+			<thead>
+			<tr>
+				<th>Pedido</th>
+				<th>Fecha</th>
+				<th>Unidades</th>
+				<th>Estado</th>
+				<th class="text-end">Total</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="c : ${compras}">
+				<td class="fw-semibold" th:text="'Nº ' + ${c.id()}">Nº 1</td>
+				<td th:text="${c.fecha() != null} ? ${#temporals.format(c.fecha(), 'dd/MM/yyyy HH:mm')} : '—'">fecha</td>
+				<td th:text="${c.unidades()}">0</td>
+				<td>
+						<span class="badge"
+							  th:classappend="${c.estado().name() == 'PAGADA'} ? 'bg-success' : 'bg-secondary'"
+							  th:text="${c.estado()}">PAGADA</span>
+				</td>
+				<td class="text-end fw-semibold"
+					th:text="${#numbers.formatDecimal(c.total(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+				<td class="text-end">
+					<a th:href="@{/compras/{id}(id=${c.id()})}" class="btn btn-sm btn-outline-secondary">
+						Ver detalle
+					</a>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</main>
+
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

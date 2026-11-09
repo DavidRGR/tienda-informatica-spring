@@ -1,6 +1,7 @@
 package es.davidrgr.proyectoSpring.controllers;
 
 import es.davidrgr.proyectoSpring.modelo.Compra;
+import es.davidrgr.proyectoSpring.modelo.EstadoCompra;
 import es.davidrgr.proyectoSpring.repositorio.CompraRepository;
 import es.davidrgr.proyectoSpring.repositorio.DetalleCompraRepository;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,12 @@ public class ComprasController {
 	public ComprasController(CompraRepository compraRepository, DetalleCompraRepository detalleRepository) {
 		this.compraRepository = compraRepository;
 		this.detalleRepository = detalleRepository;
+	}
+
+	@GetMapping("/compras")
+	public String listar(Authentication auth, Model model) {
+		model.addAttribute("compras", compraRepository.resumenes(auth.getName(), EstadoCompra.PENDIENTE));
+		return "mis-compras";
 	}
 
 	@GetMapping("/compras/{id}")

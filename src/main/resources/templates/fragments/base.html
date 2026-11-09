@@ -51,6 +51,9 @@
 					<a class="nav-link" th:href="@{/admin}"><i class="bi bi-gear"></i> Administración</a>
 				</li>
 				<li class="nav-item" th:if="${esComprador}">
+					<a class="nav-link" th:href="@{/compras}"><i class="bi bi-bag"></i> Mis compras</a>
+				</li>
+				<li class="nav-item" th:if="${esComprador}">
 					<a class="nav-link" th:href="@{/carrito}" role="button"
 					   data-bs-toggle="offcanvas" data-bs-target="#panelCarrito" aria-controls="panelCarrito">
 						<i class="bi bi-cart3"></i> Carrito
