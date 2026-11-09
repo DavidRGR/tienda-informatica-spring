@@ -1,6 +1,8 @@
 package es.davidrgr.proyectoSpring.web;
 
+import es.davidrgr.proyectoSpring.modelo.EstadoCompra;
 import es.davidrgr.proyectoSpring.repositorio.CategoriaRepository;
+import es.davidrgr.proyectoSpring.repositorio.DetalleCompraRepository;
 import es.davidrgr.proyectoSpring.seguridad.UsuarioAutenticado;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,11 +15,14 @@ public class DatosGlobalesAdvice {
 
 	//Llamamos al repositorio de las categorias
 	private final CategoriaRepository categoriaRepository;
+	private final DetalleCompraRepository detalleCompraRepository;
 
 	//Creamos un constructor de la clase y le asignamos la categoriaRepository que declaramos anteriormente
 	// (Funciona gracias al AutoWired implicito y lo que tenemos en su interfaz propia)
-	public DatosGlobalesAdvice(CategoriaRepository categoriaRepository) {
+
+	public DatosGlobalesAdvice(CategoriaRepository categoriaRepository, DetalleCompraRepository detalleCompraRepository) {
 		this.categoriaRepository = categoriaRepository;
+		this.detalleCompraRepository = detalleCompraRepository;
 	}
 
 	//Metodo para averiguar si el usuario tiene rol, obtiene las autoridades, y un rol y comprueba si el rol existe en las autoridades
@@ -48,5 +53,11 @@ public class DatosGlobalesAdvice {
 		//Carga el rol del usuario
 		model.addAttribute("esAdmin", autenticado && tieneRol(auth, "ROLE_ADMIN"));
 		model.addAttribute("esComprador", autenticado && tieneRol(auth, "ROLE_COMPRADOR"));
+
+		model.addAttribute("unidadesCarrito",
+				autenticado && tieneRol(auth, "ROLE_COMPRADOR")
+						? detalleCompraRepository.unidadesEnCarrito(auth.getName(), EstadoCompra.PENDIENTE)
+						: 0L);
 	}
+
 }

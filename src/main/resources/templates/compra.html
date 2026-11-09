@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Compra realizada')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<div class="text-center mb-4">
+		<i class="bi bi-check-circle-fill display-3 text-success"></i>
+		<h1 class="h3 fw-bold mt-2">¡Gracias por tu compra!</h1>
+		<p class="text-muted mb-0">
+			Pedido nº <strong th:text="${compra.idCompra}">1</strong> ·
+			<span th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}">fecha</span> ·
+			<span th:text="${compra.estado}">PAGADA</span>
+		</p>
+	</div>
+
+	<div class="table-responsive">
+		<table class="table align-middle">
+			<thead>
+			<tr>
+				<th colspan="2">Artículo</th>
+				<th>Precio</th>
+				<th>Cantidad</th>
+				<th class="text-end">Subtotal</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="l : ${lineas}">
+				<td style="width: 90px">
+					<img th:src="@{${l.src()}}" th:alt="${l.nombre()}" class="carrito-img"
+						 onerror="this.onerror=null; this.src='/img/sin-imagen.svg'">
+				</td>
+				<td>
+					<div class="tarjeta-marca" th:text="${l.marca()}">MARCA</div>
+					<span class="fw-semibold" th:text="${l.nombre()}">Nombre</span>
+				</td>
+				<td th:text="${#numbers.formatDecimal(l.precioUnitario(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+				<td th:text="${l.cantidad()}">1</td>
+				<td class="text-end"
+					th:text="${#numbers.formatDecimal(l.subtotal(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+			</tr>
+			</tbody>
+			<tfoot>
+			<tr>
+				<td colspan="4" class="text-end fw-bold">Total</td>
+				<td class="text-end detalle-precio fs-5"
+					th:text="${#numbers.formatDecimal(compra.total, 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+			</tr>
+			</tfoot>
+		</table>
+	</div>
+
+	<div class="text-center mt-4">
+		<a th:href="@{/articulos}" class="btn btn-tienda px-4">Seguir comprando</a>
+	</div>
+</main>
+
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

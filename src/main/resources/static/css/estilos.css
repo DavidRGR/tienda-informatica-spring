@@ -185,3 +185,14 @@ body.login-pagina {
 .descripcion-articulo {
 	white-space: pre-line;
 }
+.bg-tienda {
+	background-color: var(--tienda-naranja);
+}
+.carrito-img {
+	width: 70px;
+	height: 70px;
+	object-fit: contain;
+}
+.cantidad-input {
+	width: 70px;
+}

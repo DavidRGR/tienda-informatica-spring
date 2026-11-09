@@ -31,7 +31,7 @@ public class ConfiguracionSeguridad {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/","/login","/registro","/registro-admin","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
-						.requestMatchers("/carrito/**").hasRole("COMPRADOR")
+						.requestMatchers("/carrito/**","/compras/**").hasRole("COMPRADOR")
 						.anyRequest().authenticated())
 				//Con este metodo configuramos el login de la página
 				// Asignamos la pagina de login

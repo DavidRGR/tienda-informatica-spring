@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Mi carrito')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<h1 class="h3 fw-bold mb-4">Mi carrito</h1>
+
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+	<div th:if="${carrito.vacio()}" class="text-center py-5">
+		<i class="bi bi-cart-x display-3 text-muted"></i>
+		<p class="lead mt-3">Tu carrito está vacío</p>
+		<a th:href="@{/articulos}" class="btn btn-tienda px-4">Ver el catálogo</a>
+	</div>
+
+	<div class="row g-4" th:unless="${carrito.vacio()}">
+
+		<div class="col-lg-8">
+			<div class="table-responsive">
+				<table class="table align-middle">
+					<thead>
+					<tr>
+						<th colspan="2">Artículo</th>
+						<th>Precio</th>
+						<th>Cantidad</th>
+						<th class="text-end">Subtotal</th>
+						<th></th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr th:each="l : ${carrito.lineas()}">
+						<td style="width: 90px">
+							<img th:src="@{${l.src()}}" th:alt="${l.nombre()}" class="carrito-img"
+								 onerror="this.onerror=null; this.src='/img/sin-imagen.svg'">
+						</td>
+						<td>
+							<div class="tarjeta-marca" th:text="${l.marca()}">MARCA</div>
+							<a th:href="@{/articulos/{id}(id=${l.idArticulo()})}"
+							   class="text-reset fw-semibold text-decoration-none" th:text="${l.nombre()}">Nombre</a>
+							<div class="small text-danger" th:if="${l.superaStock()}">
+								Solo quedan <span th:text="${l.stock()}">0</span> unidades
+							</div>
+						</td>
+						<td th:text="${#numbers.formatDecimal(l.precioUnitario(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+						<td>
+							<form th:action="@{/carrito/cantidad/{id}(id=${l.idDetalle()})}" method="post"
+								  class="d-flex gap-1">
+								<input type="number" name="cantidad" min="1" th:max="${l.stock()}"
+									   th:value="${l.cantidad()}" class="form-control form-control-sm cantidad-input">
+								<button type="submit" class="btn btn-sm btn-outline-secondary" title="Actualizar cantidad">
+									<i class="bi bi-arrow-repeat"></i>
+								</button>
+							</form>
+						</td>
+						<td class="text-end fw-semibold"
+							th:text="${#numbers.formatDecimal(l.subtotal(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+						<td>
+							<form th:action="@{/carrito/quitar/{id}(id=${l.idDetalle()})}" method="post">
+								<button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar">
+									<i class="bi bi-trash"></i>
+								</button>
+							</form>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="col-lg-4">
+			<div class="card">
+				<div class="card-body">
+					<h2 class="h5 fw-bold">Resumen</h2>
+					<div class="d-flex justify-content-between my-3">
+						<span>Unidades</span>
+						<span th:text="${carrito.unidades()}">0</span>
+					</div>
+					<div class="d-flex justify-content-between align-items-baseline mb-3">
+						<span>Total</span>
+						<span class="detalle-precio"
+							  th:text="${#numbers.formatDecimal(carrito.total(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</span>
+					</div>
+					<form th:action="@{/carrito/finalizar}" method="post">
+						<button type="submit" class="btn btn-tienda w-100 py-2"
+								th:disabled="${carrito.hayProblemasDeStock()}">
+							Finalizar compra
+						</button>
+					</form>
+					<p class="small text-danger mt-2 mb-0" th:if="${carrito.hayProblemasDeStock()}">
+						Ajusta las cantidades marcadas para poder finalizar.
+					</p>
+					<p class="small text-muted mt-3 mb-0">Es una simulación: no se realiza ningún pago real.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

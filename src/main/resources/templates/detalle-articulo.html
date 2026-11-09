@@ -7,6 +7,8 @@
 
 <main class="container my-4">
 
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
 	<!-- Migas de pan -->
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb small">

@@ -51,7 +51,9 @@
 					<a class="nav-link" th:href="@{/admin}"><i class="bi bi-gear"></i> Administración</a>
 				</li>
 				<li class="nav-item" th:if="${esComprador}">
-					<a class="nav-link" th:href="@{/carrito}"><i class="bi bi-cart3"></i> Carrito</a>
+					<a class="nav-link" th:href="@{/carrito}"><i class="bi bi-cart3"></i> Carrito
+						<span class="badge rounded-pill bg-tienda" th:if="${unidadesCarrito > 0}"
+							  th:text="${unidadesCarrito}">0</span></a>
 				</li>
 				<li class="nav-item" th:if="${autenticado}">
 					<span class="navbar-text small" th:text="${nombreUsuario}">usuario</span>
