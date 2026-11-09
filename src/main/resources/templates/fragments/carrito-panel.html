@@ -1,0 +1,60 @@
+<div th:fragment="panel" class="panel-carrito" xmlns:th="http://www.thymeleaf.org">
+
+	<div th:if="${errorPanel}" class="alert alert-danger m-3 mb-0 py-2 small" th:text="${errorPanel}"></div>
+	<div th:if="${avisoPanel}" class="alert alert-success m-3 mb-0 py-2 small" th:text="${avisoPanel}"></div>
+
+	<!-- Lo lee el JavaScript para actualizar el contador del navbar -->
+	<span hidden th:attr="data-unidades=${carrito.unidades()}"></span>
+
+	<div th:if="${carrito.vacio()}" class="text-center p-5 my-auto">
+		<i class="bi bi-cart-x display-4 text-muted"></i>
+		<p class="mt-3 mb-3">Tu carrito está vacío</p>
+		<a th:href="@{/articulos}" class="btn btn-tienda btn-sm px-3">Ver el catálogo</a>
+	</div>
+
+	<th:block th:unless="${carrito.vacio()}">
+		<ul class="list-unstyled mb-0 panel-lista">
+			<li class="panel-linea" th:each="l : ${carrito.lineas()}">
+				<img th:src="@{${l.src()}}" th:alt="${l.nombre()}" class="panel-img"
+					 onerror="this.onerror=null; this.src='/img/sin-imagen.svg'">
+
+				<div class="flex-grow-1">
+					<a th:href="@{/articulos/{id}(id=${l.idArticulo()})}"
+					   class="small fw-semibold text-reset text-decoration-none d-block" th:text="${l.nombre()}">Nombre</a>
+					<div class="small text-danger" th:if="${l.superaStock()}">
+						Solo quedan <span th:text="${l.stock()}">0</span> unidades
+					</div>
+					<div class="d-flex align-items-center justify-content-between mt-2">
+						<form data-carrito th:action="@{/carrito/cantidad/{id}(id=${l.idDetalle()})}" method="post">
+							<input type="number" name="cantidad" min="1" th:max="${l.stock()}" th:value="${l.cantidad()}"
+								   class="form-control form-control-sm cantidad-input"
+								   aria-label="Cantidad" onchange="this.form.requestSubmit()">
+						</form>
+						<span class="fw-semibold"
+							  th:text="${#numbers.formatDecimal(l.subtotal(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</span>
+					</div>
+				</div>
+
+				<form data-carrito th:action="@{/carrito/quitar/{id}(id=${l.idDetalle()})}" method="post">
+					<button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Quitar">
+						<i class="bi bi-trash"></i>
+					</button>
+				</form>
+			</li>
+		</ul>
+
+		<div class="panel-pie">
+			<div class="d-flex justify-content-between align-items-baseline mb-3">
+				<span>Total (<span th:text="${carrito.unidades()}">0</span> uds.)</span>
+				<span class="fs-4 fw-bold texto-tienda"
+					  th:text="${#numbers.formatDecimal(carrito.total(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</span>
+			</div>
+			<form th:action="@{/carrito/finalizar}" method="post" class="mb-2">
+				<button type="submit" class="btn btn-tienda w-100" th:disabled="${carrito.hayProblemasDeStock()}">
+					Finalizar compra
+				</button>
+			</form>
+			<a th:href="@{/carrito}" class="btn btn-outline-secondary btn-sm w-100">Ver carrito completo</a>
+		</div>
+	</th:block>
+</div>

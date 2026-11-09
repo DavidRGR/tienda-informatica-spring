@@ -58,7 +58,7 @@
 			<!-- Compra -->
 			<div th:if="${articulo.stock() > 0}">
 				<form th:if="${esComprador}" th:action="@{/carrito/agregar/{id}(id=${articulo.id()})}"
-					  method="post" class="d-flex gap-2 mb-3">
+					  method="post" class="d-flex gap-2 mb-3" data-carrito>
 					<select name="cantidad" class="form-select w-auto" aria-label="Cantidad">
 						<option th:each="n : ${#numbers.sequence(1, articulo.maxCantidad())}"
 								th:value="${n}" th:text="${n}">1</option>
