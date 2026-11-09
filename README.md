@@ -24,8 +24,10 @@ erDiagram
   ARTICULO ||--o{ DETALLE_COMPRA : incluido
   COMPRA ||--|{ DETALLE_COMPRA : contiene
   USUARIO ||--o{ COMPRA : realiza
-  USUARIO ||--o{ USUARIO_ROL : tiene
+  USUARIO ||--|{ USUARIO_ROL : tiene
   ROL ||--o{ USUARIO_ROL : asignado
+  ARTICULO ||--o{ COMENTARIO : recibe
+  USUARIO ||--o{ COMENTARIO : escribe
 
   CATEGORIA {
     bigint id_categoria PK
@@ -79,5 +81,14 @@ erDiagram
     bigint id_articulo FK
     integer cantidad
     numeric precio_unitario
+  }
+  COMENTARIO {
+    bigint id_comentario PK
+    bigint id_usuario FK
+    bigint id_articulo FK
+    integer valoracion
+    text texto
+    timestamp fecha
+    boolean visible
   }
 ```
