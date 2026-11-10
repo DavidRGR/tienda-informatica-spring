@@ -1,0 +1,4 @@
+<span th:fragment="estrellas(valor)" class="estrellas" xmlns:th="http://www.thymeleaf.org">
+	<i th:each="n : ${#numbers.sequence(1, 5)}" class="bi"
+	   th:classappend="${valor >= n} ? 'bi-star-fill' : (${valor >= n - 0.5} ? 'bi-star-half' : 'bi-star')"></i>
+</span>

@@ -2,6 +2,7 @@ package es.davidrgr.proyectoSpring.seguridad;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,6 +33,7 @@ public class ConfiguracionSeguridad {
 						.requestMatchers("/","/login","/registro","/registro-admin","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
 						.requestMatchers("/carrito/**","/compras/**").hasRole("COMPRADOR")
+						.requestMatchers(HttpMethod.POST, "/articulos/*/comentarios").authenticated()
 						.anyRequest().authenticated())
 				//Con este metodo configuramos el login de la página
 				// Asignamos la pagina de login

@@ -3,15 +3,18 @@ package es.davidrgr.proyectoSpring.controllers;
 import es.davidrgr.proyectoSpring.dto.ArticuloDetalle;
 import es.davidrgr.proyectoSpring.dto.ArticuloTarjeta;
 import es.davidrgr.proyectoSpring.modelo.Categoria;
+import es.davidrgr.proyectoSpring.modelo.EstadoCompra;
 import es.davidrgr.proyectoSpring.modelo.Subcategoria;
 import es.davidrgr.proyectoSpring.repositorio.ArticuloRepository;
 import es.davidrgr.proyectoSpring.repositorio.CategoriaRepository;
+import es.davidrgr.proyectoSpring.repositorio.ComentarioRepository;
 import es.davidrgr.proyectoSpring.repositorio.SubcategoriaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,11 +33,13 @@ public class ArticuloController {
 	private final ArticuloRepository articuloRepository;
 	private final CategoriaRepository categoriaRepository;
 	private final SubcategoriaRepository subcategoriaRepository;
+	private final ComentarioRepository comentarioRepository;
 
-	public ArticuloController(ArticuloRepository articuloRepository, CategoriaRepository categoriaRepository, SubcategoriaRepository subcategoriaRepository) {
+	public ArticuloController(ArticuloRepository articuloRepository, CategoriaRepository categoriaRepository, SubcategoriaRepository subcategoriaRepository, ComentarioRepository comentarioRepository) {
 		this.articuloRepository = articuloRepository;
 		this.categoriaRepository = categoriaRepository;
 		this.subcategoriaRepository = subcategoriaRepository;
+		this.comentarioRepository = comentarioRepository;
 	}
 
 	// Mapping de la ruta artículo para listarlos
@@ -91,10 +96,16 @@ public class ArticuloController {
 	}
 
 	@GetMapping("/articulos/{id}")
-	public String detalle(@PathVariable Long id, Model model) {
+	public String detalle(@PathVariable Long id, Authentication auth, Model model) {
 		ArticuloDetalle articulo = articuloRepository.buscarDetalle(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Artículo no encontrado"));
+
 		model.addAttribute("articulo", articulo);
+		model.addAttribute("comentarios", comentarioRepository.listarVisibles(id, EstadoCompra.PAGADA));
+		model.addAttribute("valoracion", comentarioRepository.resumen(id));
+		model.addAttribute("yaComento", auth != null
+				&& comentarioRepository.existsByArticuloIdArticuloAndUsuarioCorreo(id, auth.getName()));
 		return "detalle-articulo";
 	}
+
 }

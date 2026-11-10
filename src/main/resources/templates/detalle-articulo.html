@@ -38,6 +38,12 @@
 			<span class="tarjeta-marca" th:text="${articulo.marca()}">MARCA</span>
 			<h1 class="h3 fw-bold my-2" th:text="${articulo.nombre()}">Nombre del artículo</h1>
 
+			<div class="mb-2" th:if="${valoracion.hayValoraciones()}">
+				<span th:replace="~{fragments/estrellas :: estrellas(${valoracion.mediaOCero()})}"></span>
+				<a href="#comentarios" class="small text-muted text-decoration-none ms-1"
+				   th:text="${#numbers.formatDecimal(valoracion.mediaOCero(), 1, 1, 'COMMA')} + ' · ' + ${valoracion.total()} + ' opiniones'">4,5 · 3 opiniones</a>
+			</div>
+
 			<div class="detalle-precio mb-2"
 				 th:text="${#numbers.formatDecimal(articulo.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
 
@@ -86,6 +92,61 @@
 			</p>
 		</div>
 	</div>
+
+	<section id="comentarios" class="mt-5">
+		<h2 class="h4 fw-bold mb-3">Opiniones</h2>
+
+		<div th:if="${avisoComentario}" class="alert alert-success" th:text="${avisoComentario}"></div>
+		<div th:if="${errorComentario}" class="alert alert-danger" th:text="${errorComentario}"></div>
+
+		<!-- Formulario -->
+		<div class="card mb-4">
+			<div class="card-body">
+				<form th:if="${autenticado and !yaComento}" th:action="@{/articulos/{id}/comentarios(id=${articulo.id()})}"
+					  method="post">
+					<div class="mb-2">
+						<div class="small fw-semibold mb-1">Tu valoración</div>
+						<div class="estrellas-input">
+							<th:block th:each="n : ${#numbers.sequence(5, 1, -1)}">
+								<input type="radio" name="valoracion" th:id="'estrella' + ${n}" th:value="${n}" required>
+								<label th:for="'estrella' + ${n}" th:title="${n} + ' de 5'"><i class="bi bi-star-fill"></i></label>
+							</th:block>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="texto" class="form-label small fw-semibold">Tu opinión</label>
+						<textarea id="texto" name="texto" class="form-control" rows="3" maxlength="1000" required
+								  placeholder="Cuéntanos qué te ha parecido este artículo"></textarea>
+					</div>
+					<button type="submit" class="btn btn-tienda">Publicar opinión</button>
+				</form>
+
+				<p class="mb-0 text-muted" th:if="${autenticado and yaComento}">
+					<i class="bi bi-check-circle"></i> Ya has opinado sobre este artículo.
+				</p>
+				<p class="mb-0" th:unless="${autenticado}">
+					<a th:href="@{/login}">Inicia sesión</a> para dejar tu opinión.
+				</p>
+			</div>
+		</div>
+
+		<!-- Lista -->
+		<p class="text-muted" th:if="${comentarios.isEmpty()}">Todavía no hay opiniones. ¡Sé el primero!</p>
+
+		<div class="comentario" th:each="c : ${comentarios}">
+			<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+				<span class="fw-semibold" th:text="${c.autor()}">Autor</span>
+				<span th:replace="~{fragments/estrellas :: estrellas(${c.valoracion()})}"></span>
+				<span class="badge text-bg-success" th:if="${c.compraVerificada()}">
+				<i class="bi bi-patch-check-fill"></i> Compra verificada
+			</span>
+				<span class="small text-muted ms-auto"
+					  th:text="${#temporals.format(c.fecha(), 'dd/MM/yyyy')}">01/01/2026</span>
+			</div>
+			<p class="mb-0 descripcion-articulo" th:text="${c.texto()}">Texto</p>
+		</div>
+	</section>
+
 </main>
 
 <script th:replace="~{fragments/base :: scripts}"></script>

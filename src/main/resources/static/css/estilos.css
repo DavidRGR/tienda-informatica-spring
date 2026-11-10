@@ -222,3 +222,39 @@ body.login-pagina {
 	padding: 1rem;
 	background: #fff;
 }
+
+.estrellas {
+	color: #ffb400;
+}
+.comentario {
+	padding: 1rem 0;
+	border-bottom: 1px solid #e9ecef;
+}
+
+/* Selector de estrellas: los radios van en orden inverso para poder iluminar hacia la izquierda */
+.estrellas-input {
+	display: inline-flex;
+	flex-direction: row-reverse;
+	position: relative;
+}
+.estrellas-input input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+.estrellas-input label {
+	font-size: 1.7rem;
+	color: #ced4da;
+	cursor: pointer;
+	padding: 0 0.1rem;
+}
+.estrellas-input input:checked ~ label,
+.estrellas-input label:hover,
+.estrellas-input label:hover ~ label {
+	color: #ffb400;
+}
+.estrellas-input input:focus-visible + label {
+	outline: 2px solid var(--tienda-naranja);
+	border-radius: 4px;
+}
