@@ -6,17 +6,22 @@
 <nav th:replace="~{fragments/base :: navbar}"></nav>
 
 <main class="container my-4">
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+
 	<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
 		<div>
 			<h1 class="h3 fw-bold mb-0"><i class="bi bi-gear"></i> Administración de artículos</h1>
 			<span class="text-muted small" th:text="${pagina.totalElements} + ' artículos'">0 artículos</span>
 		</div>
 
-		<form method="get" th:action="@{/admin/articulos}" class="d-flex gap-2">
-			<input type="search" name="q" th:value="${q}" class="form-control form-control-sm"
-				   placeholder="Buscar por nombre" aria-label="Buscar por nombre">
-			<button type="submit" class="btn btn-sm btn-tienda"><i class="bi bi-search"></i></button>
-		</form>
+		<div class="d-flex gap-2">
+			<form method="get" th:action="@{/admin/articulos}" class="d-flex gap-2">
+				<input type="search" name="q" th:value="${q}" class="form-control form-control-sm"
+					   placeholder="Buscar por nombre" aria-label="Buscar por nombre">
+				<button type="submit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-search"></i></button>
+			</form>
+			<a th:href="@{/admin/articulos/nuevo}" class="btn btn-sm btn-tienda"><i class="bi bi-plus-lg"></i> Nuevo artículo</a>
+		</div>
 	</div>
 
 	<div th:if="${pagina.isEmpty()}" class="alert alert-info">No hay artículos que coincidan.</div>
@@ -32,6 +37,7 @@
 				<th class="text-end">Stock</th>
 				<th>Estado</th>
 				<th>Última modificación</th>
+				<th></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -53,6 +59,16 @@
 				<td>
 					<div th:text="${#temporals.format(a.fechaModificacion(), 'dd/MM/yyyy HH:mm')}">fecha</div>
 					<div class="text-muted" th:text="${a.modificadoPor() != null} ? ${a.modificadoPor()} : '—'">—</div>
+				</td>
+				<td class="text-end text-nowrap">
+					<a th:href="@{/admin/articulos/{id}/editar(id=${a.id()})}" class="btn btn-sm btn-outline-secondary">
+						<i class="bi bi-pencil"></i> Editar
+					</a>
+					<form th:action="@{/admin/articulos/{id}/activo(id=${a.id()})}" method="post" class="d-inline">
+						<button type="submit" class="btn btn-sm"
+								th:classappend="${a.activo()} ? 'btn-outline-danger' : 'btn-outline-success'"
+								th:text="${a.activo()} ? 'Desactivar' : 'Activar'">Desactivar</button>
+					</form>
 				</td>
 			</tr>
 			</tbody>

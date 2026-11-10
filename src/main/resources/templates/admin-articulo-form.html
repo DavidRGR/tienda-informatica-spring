@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Artículo')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4" style="max-width: 860px">
+	<h1 class="h3 fw-bold mb-4" th:text="${idArticulo != null} ? 'Editar artículo' : 'Nuevo artículo'">Artículo</h1>
+
+	<form th:action="${idArticulo != null} ? @{/admin/articulos/{id}(id=${idArticulo})} : @{/admin/articulos}"
+		  th:object="${articuloForm}" method="post" enctype="multipart/form-data" novalidate>
+
+		<div class="row g-3">
+			<div class="col-12">
+				<label for="nombre" class="form-label fw-semibold">Nombre*</label>
+				<input type="text" id="nombre" th:field="*{nombre}" class="form-control"
+					   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
+				<div class="invalid-feedback" th:errors="*{nombre}"></div>
+			</div>
+
+			<div class="col-md-6">
+				<label for="idMarca" class="form-label fw-semibold">Marca*</label>
+				<select id="idMarca" th:field="*{idMarca}" class="form-select"
+						th:classappend="${#fields.hasErrors('idMarca')} ? 'is-invalid'">
+					<option value="">Elige una marca</option>
+					<option th:each="m : ${marcas}" th:value="${m.idMarca}" th:text="${m.nombre}">Marca</option>
+				</select>
+				<div class="invalid-feedback" th:errors="*{idMarca}"></div>
+			</div>
+
+			<div class="col-md-6"></div>
+
+			<div class="col-md-6">
+				<label for="idCategoria" class="form-label fw-semibold">Categoría*</label>
+				<select id="idCategoria" th:field="*{idCategoria}" class="form-select"
+						th:classappend="${#fields.hasErrors('idCategoria')} ? 'is-invalid'">
+					<option value="">Elige una categoría</option>
+					<option th:each="c : ${categorias}" th:value="${c.idCategoria}" th:text="${c.nombre}">Categoría</option>
+				</select>
+				<div class="invalid-feedback" th:errors="*{idCategoria}"></div>
+			</div>
+
+			<div class="col-md-6">
+				<label for="idSubcategoria" class="form-label fw-semibold">Subcategoría</label>
+				<select id="idSubcategoria" th:field="*{idSubcategoria}" class="form-select"
+						th:classappend="${#fields.hasErrors('idSubcategoria')} ? 'is-invalid'">
+					<option value="">Sin subcategoría</option>
+					<th:block th:each="c : ${categorias}">
+						<option th:each="s : ${c.subcategorias}" th:value="${s.idSubcategoria}"
+								th:attr="data-categoria=${c.idCategoria}" th:text="${s.nombre}">Subcategoría</option>
+					</th:block>
+				</select>
+				<div class="invalid-feedback" th:errors="*{idSubcategoria}"></div>
+			</div>
+
+			<div class="col-md-6">
+				<label for="precio" class="form-label fw-semibold">Precio (€)*</label>
+				<input type="number" id="precio" th:field="*{precio}" class="form-control" step="0.01" min="0.01"
+					   th:classappend="${#fields.hasErrors('precio')} ? 'is-invalid'">
+				<div class="invalid-feedback" th:errors="*{precio}"></div>
+			</div>
+
+			<div class="col-md-6">
+				<label for="stock" class="form-label fw-semibold">Stock*</label>
+				<input type="number" id="stock" th:field="*{stock}" class="form-control" min="0"
+					   th:classappend="${#fields.hasErrors('stock')} ? 'is-invalid'">
+				<div class="invalid-feedback" th:errors="*{stock}"></div>
+			</div>
+
+			<div class="col-12">
+				<label for="descripcion" class="form-label fw-semibold">Descripción</label>
+				<textarea id="descripcion" th:field="*{descripcion}" rows="5" class="form-control"
+						  th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid'"></textarea>
+				<div class="invalid-feedback" th:errors="*{descripcion}"></div>
+			</div>
+
+			<div class="col-12">
+				<label for="imagen" class="form-label fw-semibold">Foto</label>
+				<div class="d-flex align-items-center gap-3">
+					<img id="vistaPrevia" class="carrito-img"
+						 th:src="@{${imagenActualSrc != null} ? ${imagenActualSrc} : '/img/sin-imagen.svg'}" alt="Foto del artículo">
+					<div class="flex-grow-1">
+						<input type="file" id="imagen" name="imagen" class="form-control"
+							   accept="image/jpeg,image/png,image/webp"
+							   th:classappend="${#fields.hasErrors('imagen')} ? 'is-invalid'">
+						<div class="invalid-feedback" th:errors="*{imagen}"></div>
+						<div class="form-text" th:text="${idArticulo != null} ? 'Si no eliges ninguna, se conserva la foto actual. JPG, PNG o WebP, máximo 5 MB.' : 'JPG, PNG o WebP, máximo 5 MB.'">Ayuda</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12">
+				<div class="form-check form-switch">
+					<input class="form-check-input" type="checkbox" id="activo" th:field="*{activo}">
+					<label class="form-check-label" for="activo">Visible en la tienda</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex gap-2 mt-4">
+			<button type="submit" class="btn btn-tienda px-4">Guardar</button>
+			<a th:href="@{/admin/articulos}" class="btn btn-outline-secondary px-4">Cancelar</a>
+		</div>
+	</form>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+
+<script>
+	const categoria = document.getElementById('idCategoria');
+	const subcategoria = document.getElementById('idSubcategoria');
+
+	function filtrarSubcategorias() {
+		for (const op of subcategoria.options) {
+			if (!op.value) continue;
+			const visible = op.dataset.categoria === categoria.value;
+			op.hidden = !visible;
+			op.disabled = !visible;
+		}
+		const elegida = subcategoria.selectedOptions[0];
+		if (elegida && elegida.value && elegida.disabled) subcategoria.value = '';
+	}
+	categoria.addEventListener('change', filtrarSubcategorias);
+	filtrarSubcategorias();
+
+	document.getElementById('imagen').addEventListener('change', (e) => {
+		const archivo = e.target.files[0];
+		if (archivo) document.getElementById('vistaPrevia').src = URL.createObjectURL(archivo);
+	});
+</script>
+</body>
+</html>
