@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -55,6 +56,10 @@ public class ArticuloController {
 		switch (orden) {
 			case "precio-asc" -> sort = Sort.by("precio").ascending();
 			case "precio-desc" -> sort = Sort.by("precio").descending();
+			case "mejor-valorados" -> sort = JpaSort.unsafe(Sort.Direction.DESC, "coalesce(avg(c.valoracion), 0)")
+					.and(JpaSort.unsafe(Sort.Direction.DESC, "count(c)"));
+			case "peor-valorados" -> sort = JpaSort.unsafe(Sort.Direction.ASC, "coalesce(avg(c.valoracion), 6)")
+					.and(JpaSort.unsafe(Sort.Direction.DESC, "count(c)"));
 			default -> { orden = "nombre"; sort = Sort.by("nombre").ascending(); }
 		}
 		// El id como segundo criterio hace estable la paginación

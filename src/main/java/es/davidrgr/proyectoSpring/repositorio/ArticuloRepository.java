@@ -15,18 +15,26 @@ import java.util.Optional;
 
 public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
-	String TARJETA = "select new es.davidrgr.proyectoSpring.dto.ArticuloTarjeta("
-			+ "a.idArticulo, a.nombre, a.precio, a.imagenUrl, a.stock, a.marca.nombre) from Articulo a ";
+	String TARJETA = """
+		select new es.davidrgr.proyectoSpring.dto.ArticuloTarjeta(
+			a.idArticulo, a.nombre, a.precio, a.imagenUrl, a.stock, m.nombre,
+			avg(c.valoracion), count(c))
+		from Articulo a
+		join a.marca m
+		left join Comentario c on c.articulo = a and c.visible = true
+		""";
 
-	@Query(value = TARJETA + "where a.activo = true",
+	String AGRUPAR = " group by a.idArticulo, a.nombre, a.precio, a.imagenUrl, a.stock, m.nombre";
+
+	@Query(value = TARJETA + "where a.activo = true" + AGRUPAR,
 			countQuery = "select count(a) from Articulo a where a.activo = true")
 	Page<ArticuloTarjeta> listarActivos(Pageable pageable);
 
-	@Query(value = TARJETA + "where a.activo = true and a.categoria.idCategoria = :id",
+	@Query(value = TARJETA + "where a.activo = true and a.categoria.idCategoria = :id" + AGRUPAR,
 			countQuery = "select count(a) from Articulo a where a.activo = true and a.categoria.idCategoria = :id")
 	Page<ArticuloTarjeta> listarPorCategoria(@Param("id") Long id, Pageable pageable);
 
-	@Query(value = TARJETA + "where a.activo = true and a.subcategoria.idSubcategoria = :id",
+	@Query(value = TARJETA + "where a.activo = true and a.subcategoria.idSubcategoria = :id" + AGRUPAR,
 			countQuery = "select count(a) from Articulo a where a.activo = true and a.subcategoria.idSubcategoria = :id")
 	Page<ArticuloTarjeta> listarPorSubcategoria(@Param("id") Long id, Pageable pageable);
 	@Query("""

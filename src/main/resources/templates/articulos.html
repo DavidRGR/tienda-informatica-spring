@@ -22,6 +22,8 @@
 				<option value="nombre" th:selected="${orden == 'nombre'}">Nombre</option>
 				<option value="precio-asc" th:selected="${orden == 'precio-asc'}">Precio: menor a mayor</option>
 				<option value="precio-desc" th:selected="${orden == 'precio-desc'}">Precio: mayor a menor</option>
+				<option value="mejor-valorados" th:selected="${orden == 'mejor-valorados'}">Mejor valorados</option>
+				<option value="peor-valorados" th:selected="${orden == 'peor-valorados'}">Peor valorados</option>
 			</select>
 		</form>
 	</div>
@@ -43,6 +45,11 @@
 						   th:text="${a.nombre()}">Nombre del artículo</a>
 					</h2>
 					<div class="mt-auto">
+						<div class="small mb-1" th:if="${a.tieneOpiniones()}">
+							<span th:replace="~{fragments/estrellas :: estrellas(${a.mediaOCero()})}"></span>
+							<span class="text-muted"
+								  th:text="${#numbers.formatDecimal(a.mediaOCero(), 1, 1, 'COMMA')} + ' (' + ${a.opiniones()} + ')'">4,5 (3)</span>
+						</div>
 						<div class="tarjeta-precio"
 							 th:text="${#numbers.formatDecimal(a.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
 						<span th:if="${a.stock() > 0}" class="small text-success">
