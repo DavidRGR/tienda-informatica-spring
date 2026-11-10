@@ -77,6 +77,59 @@
 	</div>
 </nav>
 
+<footer th:fragment="pie" class="pie-pagina">
+	<div class="container py-5">
+		<div class="row g-4">
+
+			<div class="col-6 col-lg-3">
+				<h2 class="pie-titulo">Por qué comprar</h2>
+				<ul class="pie-lista">
+					<li><a th:href="@{/legal/como-comprar}">Cómo comprar</a></li>
+					<li><a th:href="@{/legal/formas-de-pago}">Formas de pago</a></li>
+					<li><a th:href="@{/legal/gastos-de-envio}">Gastos de envío</a></li>
+					<li><a th:href="@{/legal/preguntas-frecuentes}">Preguntas frecuentes</a></li>
+					<li><a th:href="@{/legal/condiciones}">Condiciones de compra</a></li>
+				</ul>
+			</div>
+
+			<div class="col-6 col-lg-3">
+				<h2 class="pie-titulo">Quiénes somos</h2>
+				<ul class="pie-lista">
+					<li><a th:href="@{/legal/quienes-somos}">Quiénes somos</a></li>
+					<li><a th:href="@{/legal/aviso-legal}">Aviso legal</a></li>
+					<li><a th:href="@{/legal/privacidad}">Privacidad</a></li>
+					<li><a th:href="@{/legal/cookies}">Política de cookies</a></li>
+				</ul>
+			</div>
+
+			<div class="col-6 col-lg-3">
+				<h2 class="pie-titulo">Contactar</h2>
+				<ul class="pie-lista">
+					<li><a th:href="@{/legal/contacto}">Contacto y ayuda</a></li>
+					<li><a th:href="@{/legal/devoluciones}">Devoluciones y garantías</a></li>
+					<li><a th:href="@{/registro-admin}">Acceso de empleados</a></li>
+				</ul>
+			</div>
+
+			<div class="col-6 col-lg-3">
+				<h2 class="pie-titulo">Comunidad</h2>
+				<ul class="pie-lista">
+					<li><a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"><i class="bi bi-instagram"></i> Instagram</a></li>
+					<li><a href="https://x.com" target="_blank" rel="noopener noreferrer"><i class="bi bi-twitter-x"></i> X</a></li>
+					<li><a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"><i class="bi bi-facebook"></i> Facebook</a></li>
+					<li><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer"><i class="bi bi-youtube"></i> YouTube</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="pie-inferior">
+		<div class="container">
+			&copy; <span th:text="${#temporals.year(#temporals.createNow())}">2026</span> TiendaPC · Tienda ficticia con fines educativos · Hecho con Spring Boot, Thymeleaf y PostgreSQL
+		</div>
+	</div>
+</footer>
+
 <th:block th:fragment="scripts">
 	<div th:if="${esComprador}" class="offcanvas offcanvas-end" tabindex="-1" id="panelCarrito"
 		 aria-labelledby="panelCarritoTitulo">

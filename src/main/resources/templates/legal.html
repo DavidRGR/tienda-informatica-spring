@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${titulo})}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-5 pagina-legal">
+	<h1 class="h3 fw-bold mb-4" th:text="${titulo}">Título</h1>
+
+	<p th:each="p : ${parrafos}" th:text="${p}">Texto</p>
+
+	<div class="alert alert-secondary small mt-4">
+		Este texto es solo de ejemplo. TiendaPC es un proyecto de demostración y no tiene validez legal.
+	</div>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

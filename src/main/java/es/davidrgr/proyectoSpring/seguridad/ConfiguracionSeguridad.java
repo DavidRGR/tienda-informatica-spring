@@ -30,7 +30,7 @@ public class ConfiguracionSeguridad {
 				// Asigna las carpetas /carrito y sus subcarpetas para que solo usuarios con el rol de Comprador puedan acceder a ellas
 				//Todas las peticiones deberán autenticarse
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/","/login","/registro","/registro-admin","/articulos/**", "/css/**", "/js/**", "/img/**").permitAll()
+						.requestMatchers("/","/login","/registro","/registro-admin","/articulos/**", "/css/**", "/js/**", "/img/**", "/legal/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
 						.requestMatchers("/carrito/**","/compras/**").hasRole("COMPRADOR")
 						.requestMatchers(HttpMethod.POST, "/articulos/*/comentarios").authenticated()

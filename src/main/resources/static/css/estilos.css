@@ -258,3 +258,73 @@ body.login-pagina {
 	outline: 2px solid var(--tienda-naranja);
 	border-radius: 4px;
 }
+
+.redes a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	margin-right: 0.4rem;
+	border: 1px solid #495057;
+	border-radius: 50%;
+	font-size: 1.1rem;
+}
+.redes a:hover {
+	border-color: var(--tienda-naranja);
+}
+.pie-legal a {
+	margin-left: 1rem;
+}
+.pagina-legal {
+	max-width: 800px;
+}
+
+/* Pie siempre abajo en las páginas que lo llevan */
+body:has(> .pie-pagina) {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+.pie-pagina {
+	margin-top: auto;
+	background: #fff;
+	border-top: 1px solid #dee2e6;
+	color: #2b2b2b;
+}
+.pie-titulo {
+	font-size: 0.95rem;
+	font-weight: 700;
+	margin-bottom: 1.1rem;
+}
+.pie-lista {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 0.9rem;
+}
+.pie-lista li {
+	margin-bottom: 0.75rem;
+}
+.pie-lista a {
+	color: #495057;
+	text-decoration: none;
+}
+.pie-lista a:hover {
+	color: var(--tienda-naranja);
+}
+.pie-lista i {
+	margin-right: 0.4rem;
+	color: #2b2b2b;
+}
+.pie-inferior {
+	background: #f8f9fa;
+	border-top: 1px solid #dee2e6;
+	padding: 1rem 0;
+	text-align: center;
+	font-size: 0.8rem;
+	color: #6c757d;
+}
+.pagina-legal {
+	max-width: 800px;
+}
