@@ -1,15 +1,16 @@
 **Tienda de informática**
 Proyecto de portfolio: una tienda online de componentes y periféricos informáticos, inspirada en PcComponentes.
+
 **Funcionalidades**
 - Catálogo de artículos con marcas, categorías y subcategorías (opcional)
 - Dos tipos de usuario:
-  - **Comprador**: Ve el catálogo, simula compras de varios artículos, y puede comentar los articulos. (En caso de que los haya comprado saldrá como compra verificada)
-  - **Administrador**: Añade artículos y crea categorías, que aparecen
-
- automáticamente en los menús
+  - **Comprador**: Ve el catálogo, simula compras de varios artículos, y puede comentar los artículos. (En caso de que los haya comprado saldrá como compra verificada)
+  - **Administrador**: Añade artículos y crea categorías, que aparecen automáticamente en los menús
 - Un usuario puede tener ambos roles
-**Tecnologías**  
+
+**Tecnologías**
 Java 25 · Spring Boot 4.1 · Spring Security · Hibernate/JPA · AspectJ · PostgreSQL · Maven · Lombok
+
 **Modelo de datos**
 ```  
 erDiagram  
