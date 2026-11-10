@@ -52,6 +52,10 @@ erDiagram
     numeric precio
     integer stock
     boolean activo
+    varchar creado_por
+    varchar modificado_por
+    timestamp fecha_creacion
+    timestamp fecha_modificacion
   }
   USUARIO {
     bigint id_usuario PK
@@ -90,3 +94,4 @@ erDiagram
     timestamp fecha
     boolean visible
   }
+```
