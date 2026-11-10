@@ -2,6 +2,7 @@ package es.davidrgr.proyectoSpring.controllers;
 
 import es.davidrgr.proyectoSpring.dto.ArticuloDetalle;
 import es.davidrgr.proyectoSpring.dto.ArticuloTarjeta;
+import es.davidrgr.proyectoSpring.dto.ComentarioVista;
 import es.davidrgr.proyectoSpring.modelo.Categoria;
 import es.davidrgr.proyectoSpring.modelo.EstadoCompra;
 import es.davidrgr.proyectoSpring.modelo.Subcategoria;
@@ -23,6 +24,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 public class ArticuloController {
@@ -101,12 +106,24 @@ public class ArticuloController {
 	}
 
 	@GetMapping("/articulos/{id}")
-	public String detalle(@PathVariable Long id, Authentication auth, Model model) {
+	public String detalle(@PathVariable Long id,
+						  @RequestParam(defaultValue = "recientes") String ordenComentarios,
+						  Authentication auth, Model model) {
 		ArticuloDetalle articulo = articuloRepository.buscarDetalle(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Artículo no encontrado"));
 
+		// La consulta ya los trae del más reciente al más antiguo. La ordenación de List es estable,
+		// así que a igual valoración se mantiene el más reciente primero.
+		List<ComentarioVista> comentarios = new ArrayList<>(comentarioRepository.listarVisibles(id, EstadoCompra.PAGADA));
+		switch (ordenComentarios) {
+			case "mejores" -> comentarios.sort(Comparator.comparingInt(ComentarioVista::valoracion).reversed());
+			case "peores" -> comentarios.sort(Comparator.comparingInt(ComentarioVista::valoracion));
+			default -> ordenComentarios = "recientes";
+		}
+
 		model.addAttribute("articulo", articulo);
-		model.addAttribute("comentarios", comentarioRepository.listarVisibles(id, EstadoCompra.PAGADA));
+		model.addAttribute("comentarios", comentarios);
+		model.addAttribute("ordenComentarios", ordenComentarios);
 		model.addAttribute("valoracion", comentarioRepository.resumen(id));
 		model.addAttribute("yaComento", auth != null
 				&& comentarioRepository.existsByArticuloIdArticuloAndUsuarioCorreo(id, auth.getName()));

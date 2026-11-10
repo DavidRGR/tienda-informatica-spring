@@ -93,6 +93,7 @@
 		</div>
 	</div>
 
+	<!-- Comentarios -->
 	<section id="comentarios" class="mt-5">
 		<h2 class="h4 fw-bold mb-3">Opiniones</h2>
 
@@ -131,6 +132,16 @@
 		</div>
 
 		<!-- Lista -->
+		<form method="get" th:action="@{/articulos/{id}(id=${articulo.id()})} + '#comentarios'"
+			  th:unless="${comentarios.isEmpty()}" class="d-flex align-items-center gap-2 mb-3">
+			<label for="ordenComentarios" class="small text-muted mb-0">Ordenar por</label>
+			<select name="ordenComentarios" id="ordenComentarios" class="form-select form-select-sm w-auto"
+					onchange="this.form.submit()">
+				<option value="recientes" th:selected="${ordenComentarios == 'recientes'}">Más recientes</option>
+				<option value="mejores" th:selected="${ordenComentarios == 'mejores'}">Mejor valorados</option>
+				<option value="peores" th:selected="${ordenComentarios == 'peores'}">Peor valorados</option>
+			</select>
+		</form>
 		<p class="text-muted" th:if="${comentarios.isEmpty()}">Todavía no hay opiniones. ¡Sé el primero!</p>
 
 		<div class="comentario" th:each="c : ${comentarios}">
