@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Administración')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+		<div>
+			<h1 class="h3 fw-bold mb-0"><i class="bi bi-gear"></i> Administración de artículos</h1>
+			<span class="text-muted small" th:text="${pagina.totalElements} + ' artículos'">0 artículos</span>
+		</div>
+
+		<form method="get" th:action="@{/admin/articulos}" class="d-flex gap-2">
+			<input type="search" name="q" th:value="${q}" class="form-control form-control-sm"
+				   placeholder="Buscar por nombre" aria-label="Buscar por nombre">
+			<button type="submit" class="btn btn-sm btn-tienda"><i class="bi bi-search"></i></button>
+		</form>
+	</div>
+
+	<div th:if="${pagina.isEmpty()}" class="alert alert-info">No hay artículos que coincidan.</div>
+
+	<div class="table-responsive" th:unless="${pagina.isEmpty()}">
+		<table class="table table-hover align-middle small">
+			<thead>
+			<tr>
+				<th>Id</th>
+				<th>Artículo</th>
+				<th>Categoría</th>
+				<th class="text-end">Precio</th>
+				<th class="text-end">Stock</th>
+				<th>Estado</th>
+				<th>Última modificación</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="a : ${pagina.content}">
+				<td th:text="${a.id()}">1</td>
+				<td>
+					<div class="fw-semibold" th:text="${a.nombre()}">Nombre</div>
+					<div class="text-muted" th:text="${a.marca()}">Marca</div>
+				</td>
+				<td th:text="${a.categoria()}">Categoría</td>
+				<td class="text-end"
+					th:text="${#numbers.formatDecimal(a.precio(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
+				<td class="text-end" th:classappend="${a.stock() == 0} ? 'text-danger fw-bold'"
+					th:text="${a.stock()}">0</td>
+				<td>
+					<span class="badge text-bg-success" th:if="${a.activo()}">Activo</span>
+					<span class="badge text-bg-secondary" th:unless="${a.activo()}">Desactivado</span>
+				</td>
+				<td>
+					<div th:text="${#temporals.format(a.fechaModificacion(), 'dd/MM/yyyy HH:mm')}">fecha</div>
+					<div class="text-muted" th:text="${a.modificadoPor() != null} ? ${a.modificadoPor()} : '—'">—</div>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<nav th:if="${pagina.totalPages > 1}" class="mt-4" aria-label="Paginación">
+		<ul class="pagination justify-content-center flex-wrap">
+			<li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number - 1})}">&laquo;</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+				th:classappend="${i == pagina.number} ? 'active'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${i})}" th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number + 1})}">&raquo;</a>
+			</li>
+		</ul>
+	</nav>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

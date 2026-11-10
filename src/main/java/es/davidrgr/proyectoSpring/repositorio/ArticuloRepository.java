@@ -1,5 +1,6 @@
 package es.davidrgr.proyectoSpring.repositorio;
 
+import es.davidrgr.proyectoSpring.dto.ArticuloAdmin;
 import es.davidrgr.proyectoSpring.dto.ArticuloDetalle;
 import es.davidrgr.proyectoSpring.dto.ArticuloTarjeta;
 import es.davidrgr.proyectoSpring.modelo.Articulo;
@@ -48,6 +49,18 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 		where a.idArticulo = :id and a.activo = true
 		""")
 	Optional<ArticuloDetalle> buscarDetalle(@Param("id") Long id);
+
+	@Query(value = """
+		select new es.davidrgr.proyectoSpring.dto.ArticuloAdmin(
+			a.idArticulo, a.nombre, m.nombre, c.nombre, a.precio, a.stock, a.activo,
+			a.modificadoPor, a.fechaModificacion)
+		from Articulo a
+		join a.marca m
+		join a.categoria c
+		where lower(a.nombre) like lower(concat('%', :q, '%'))
+		""",
+			countQuery = "select count(a) from Articulo a where lower(a.nombre) like lower(concat('%', :q, '%'))")
+	Page<ArticuloAdmin> buscarAdmin(@Param("q") String q, Pageable pageable);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select a from Articulo a where a.idArticulo = :id")
