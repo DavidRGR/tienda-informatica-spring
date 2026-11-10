@@ -1,4 +1,5 @@
 **Tienda de informática**
+
 Proyecto de portfolio: una tienda online de componentes y periféricos informáticos, inspirada en PcComponentes.
 
 **Funcionalidades**
