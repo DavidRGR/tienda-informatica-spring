@@ -11,11 +11,13 @@
 		<div>
 			<h1 class="h3 fw-bold mb-0" th:text="${titulo}">Título</h1>
 			<span class="text-muted small" th:text="${pagina.totalElements} + ' artículos'">0 artículos</span>
+			<a th:if="${!busqueda.isEmpty()}" th:href="@{/articulos}" class="small ms-2">Quitar búsqueda</a>
 		</div>
 
 		<form method="get" th:action="@{/articulos}" class="d-flex align-items-center gap-2">
 			<input type="hidden" name="categoria" th:if="${idCategoria != null}" th:value="${idCategoria}">
 			<input type="hidden" name="subcategoria" th:if="${idSubcategoria != null}" th:value="${idSubcategoria}">
+			<input type="hidden" name="q" th:if="${!busqueda.isEmpty()}" th:value="${busqueda}">
 			<label for="orden" class="small text-muted mb-0">Ordenar por</label>
 			<select name="orden" id="orden" class="form-select form-select-sm w-auto"
 					onchange="this.form.submit()">
@@ -29,7 +31,8 @@
 	</div>
 
 	<div th:if="${pagina.isEmpty()}" class="alert alert-info">
-		No hay artículos que mostrar en esta sección.
+		<span th:if="${!busqueda.isEmpty()}">No hay resultados para «<strong th:text="${busqueda}">texto</strong>». Prueba con otro término.</span>
+		<span th:if="${busqueda.isEmpty()}">No hay artículos que mostrar en esta sección.</span>
 	</div>
 
 	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">

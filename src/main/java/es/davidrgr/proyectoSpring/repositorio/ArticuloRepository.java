@@ -71,4 +71,21 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select a from Articulo a where a.idArticulo = :id")
 	Optional<Articulo> bloquear(@Param("id") Long id);
+
+	String BUSQUEDA = " and lower(concat(m.nombre, ' ', a.nombre)) like lower(concat('%', :q, '%'))";
+
+	@Query(value = TARJETA + "where a.activo = true" + BUSQUEDA + AGRUPAR,
+			countQuery = "select count(a) from Articulo a join a.marca m where a.activo = true" + BUSQUEDA)
+	Page<ArticuloTarjeta> listarActivos(@Param("q") String q, Pageable pageable);
+
+	@Query(value = TARJETA + "where a.activo = true and a.categoria.idCategoria = :id" + BUSQUEDA + AGRUPAR,
+			countQuery = "select count(a) from Articulo a join a.marca m where a.activo = true "
+					+ "and a.categoria.idCategoria = :id" + BUSQUEDA)
+	Page<ArticuloTarjeta> listarPorCategoria(@Param("id") Long id, @Param("q") String q, Pageable pageable);
+
+	@Query(value = TARJETA + "where a.activo = true and a.subcategoria.idSubcategoria = :id" + BUSQUEDA + AGRUPAR,
+			countQuery = "select count(a) from Articulo a join a.marca m where a.activo = true "
+					+ "and a.subcategoria.idSubcategoria = :id" + BUSQUEDA)
+	Page<ArticuloTarjeta> listarPorSubcategoria(@Param("id") Long id, @Param("q") String q, Pageable pageable);
+
 }

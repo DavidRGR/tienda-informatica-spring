@@ -52,11 +52,18 @@ public class ArticuloController {
 	@GetMapping("/articulos")
 	public String listar(@RequestParam(required = false) Long categoria,
 						 @RequestParam(required = false) Long subcategoria,
+						 @RequestParam(defaultValue = "") String q,
 						 @RequestParam(defaultValue = "nombre") String orden,
 						 @RequestParam(defaultValue = "0") int pagina,
 						 Model model) {
 
-		// Solo se aceptan los criterios de orden conocidos
+		String busqueda = q.trim();
+		if (busqueda.length() > 100) {
+			busqueda = busqueda.substring(0, 100);
+		}
+		// Los comodines de LIKE que escriba el usuario se tratan como texto normal
+		String patron = busqueda.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+
 		Sort sort;
 		switch (orden) {
 			case "precio-asc" -> sort = Sort.by("precio").ascending();
@@ -67,29 +74,36 @@ public class ArticuloController {
 					.and(JpaSort.unsafe(Sort.Direction.DESC, "count(c)"));
 			default -> { orden = "nombre"; sort = Sort.by("nombre").ascending(); }
 		}
-		// El id como segundo criterio hace estable la paginación
 		sort = sort.and(Sort.by("idArticulo"));
 
 		Pageable pageable = PageRequest.of(Math.max(pagina, 0), TAMANO_PAGINA, sort);
 
 		Page<ArticuloTarjeta> resultado;
-		String titulo;
+		String filtro;
 
 		if (subcategoria != null) {
-			resultado = articuloRepository.listarPorSubcategoria(subcategoria, pageable);
-			titulo = subcategoriaRepository.findById(subcategoria)
-					.map(Subcategoria::getNombre).orElse("Artículos");
+			resultado = articuloRepository.listarPorSubcategoria(subcategoria, patron, pageable);
+			filtro = subcategoriaRepository.findById(subcategoria).map(Subcategoria::getNombre).orElse(null);
 		} else if (categoria != null) {
-			resultado = articuloRepository.listarPorCategoria(categoria, pageable);
-			titulo = categoriaRepository.findById(categoria)
-					.map(Categoria::getNombre).orElse("Artículos");
+			resultado = articuloRepository.listarPorCategoria(categoria, patron, pageable);
+			filtro = categoriaRepository.findById(categoria).map(Categoria::getNombre).orElse(null);
 		} else {
-			resultado = articuloRepository.listarActivos(pageable);
-			titulo = "Todos los artículos";
+			resultado = articuloRepository.listarActivos(patron, pageable);
+			filtro = null;
 		}
 
-		// Base de los enlaces de paginación: conserva el filtro y el orden
+		String titulo;
+		if (!busqueda.isEmpty()) {
+			titulo = "Resultados para «" + busqueda + "»" + (filtro != null ? " en " + filtro : "");
+		} else {
+			titulo = filtro != null ? filtro : "Todos los artículos";
+		}
+
+		// Base de los enlaces de paginación: conserva el filtro, la búsqueda y el orden
 		UriComponentsBuilder base = UriComponentsBuilder.fromPath("/articulos").queryParam("orden", orden);
+		if (!busqueda.isEmpty()) {
+			base.queryParam("q", busqueda);
+		}
 		if (subcategoria != null) {
 			base.queryParam("subcategoria", subcategoria);
 		} else if (categoria != null) {
@@ -99,9 +113,10 @@ public class ArticuloController {
 		model.addAttribute("pagina", resultado);
 		model.addAttribute("titulo", titulo);
 		model.addAttribute("orden", orden);
+		model.addAttribute("busqueda", busqueda);
 		model.addAttribute("idCategoria", subcategoria == null ? categoria : null);
 		model.addAttribute("idSubcategoria", subcategoria);
-		model.addAttribute("urlBase", base.build().toUriString());
+		model.addAttribute("urlBase", base.build().encode().toUriString());
 		return "articulos";
 	}
 
