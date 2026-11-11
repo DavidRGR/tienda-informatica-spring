@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Registro de actividad')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<ul th:replace="~{fragments/base :: adminMenu('auditoria')}"></ul>
+
+	<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+		<div>
+			<h1 class="h3 fw-bold mb-0">Registro de actividad</h1>
+			<span class="text-muted small" th:text="${pagina.totalElements} + ' acciones'">0 acciones</span>
+		</div>
+
+		<form method="get" th:action="@{/admin/auditoria}" class="d-flex gap-2">
+			<input type="search" name="q" th:value="${q}" class="form-control form-control-sm"
+				   placeholder="Filtrar por empleado" aria-label="Filtrar por empleado">
+			<button type="submit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-search"></i></button>
+		</form>
+	</div>
+
+	<div th:if="${pagina.isEmpty()}" class="alert alert-info">Todavía no hay acciones registradas.</div>
+
+	<div class="table-responsive" th:unless="${pagina.isEmpty()}">
+		<table class="table table-hover align-middle small">
+			<thead>
+			<tr>
+				<th>Fecha</th>
+				<th>Empleado</th>
+				<th>Acción</th>
+				<th>Sobre</th>
+				<th>Detalle</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="r : ${pagina.content}">
+				<td class="text-nowrap" th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm:ss')}">fecha</td>
+				<td th:text="${r.usuario}">usuario</td>
+				<td th:switch="${r.accion}">
+					<span th:case="'CREAR'" class="badge text-bg-success">Creó</span>
+					<span th:case="'EDITAR'" class="badge text-bg-primary">Editó</span>
+					<span th:case="'CAMBIAR_ESTADO'" class="badge text-bg-warning">Cambió el estado</span>
+					<span th:case="'MODERAR'" class="badge text-bg-info">Moderó</span>
+					<span th:case="*" class="badge text-bg-secondary" th:text="${r.accion}">acción</span>
+				</td>
+				<td>
+					<th:block th:if="${r.entidad == 'Articulo' and r.idEntidad != null}">
+						<a th:href="@{/admin/articulos/{id}/editar(id=${r.idEntidad})}"
+						   th:text="'Artículo nº ' + ${r.idEntidad}">Artículo</a>
+					</th:block>
+					<th:block th:unless="${r.entidad == 'Articulo' and r.idEntidad != null}">
+						<span th:text="${r.entidad} + (${r.idEntidad} != null ? ' nº ' + ${r.idEntidad} : '')">Entidad</span>
+					</th:block>
+				</td>
+				<td class="text-muted" th:text="${r.detalle != null} ? ${r.detalle} : '—'">—</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<nav th:if="${pagina.totalPages > 1}" class="mt-4" aria-label="Paginación">
+		<ul class="pagination justify-content-center flex-wrap">
+			<li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number - 1})}">&laquo;</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+				th:classappend="${i == pagina.number} ? 'active'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${i})}" th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number + 1})}">&raquo;</a>
+			</li>
+		</ul>
+	</nav>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

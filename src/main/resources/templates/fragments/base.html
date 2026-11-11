@@ -139,6 +139,10 @@
 		<a class="nav-link" th:classappend="${activo == 'comentarios'} ? 'active'"
 		   th:href="@{/admin/comentarios}"><i class="bi bi-chat-dots"></i> Comentarios</a>
 	</li>
+	<li class="nav-item">
+		<a class="nav-link" th:classappend="${activo == 'auditoria'} ? 'active'"
+		   th:href="@{/admin/auditoria}"><i class="bi bi-clock-history"></i> Registro</a>
+	</li>
 </ul>
 
 <th:block th:fragment="scripts">

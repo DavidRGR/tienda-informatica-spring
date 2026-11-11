@@ -6,6 +6,7 @@ import es.davidrgr.proyectoSpring.repositorio.ArticuloRepository;
 import es.davidrgr.proyectoSpring.repositorio.CategoriaRepository;
 import es.davidrgr.proyectoSpring.repositorio.MarcaRepository;
 import es.davidrgr.proyectoSpring.repositorio.SubcategoriaRepository;
+import es.davidrgr.proyectoSpring.seguridad.Auditable;
 import es.davidrgr.proyectoSpring.util.Imagenes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,20 +79,22 @@ public class ArticuloAdminService {
 				.orElse(null);
 	}
 
+	@Auditable(accion = "CREAR", entidad = "Articulo")
 	@Transactional
-	public void crear(ArticuloForm f) {
+	public Long crear(ArticuloForm f) {
 		String nueva = hayImagen(f) ? almacen.guardar(f.getImagen()) : null;
 		try {
 			Articulo a = new Articulo();
 			aplicar(a, f);
 			a.setImagenUrl(nueva);
-			articuloRepository.saveAndFlush(a);
-		}catch (RuntimeException e) {
+			return articuloRepository.saveAndFlush(a).getIdArticulo();
+		} catch (RuntimeException e) {
 			almacen.borrar(nueva);
 			throw e;
 		}
 	}
 
+	@Auditable(accion = "EDITAR", entidad = "Articulo")
 	@Transactional
 	public void actualizar(Long id, ArticuloForm f) {
 		Articulo a = articuloRepository.findById(id).orElseThrow();
@@ -117,7 +120,7 @@ public class ArticuloAdminService {
 			});
 		}
 	}
-
+	@Auditable(accion = "CAMBIAR_ESTADO", entidad = "Articulo", campo = "activo")
 	@Transactional
 	public boolean alternarActivo(Long id) {
 		Articulo a = articuloRepository.findById(id).orElseThrow();

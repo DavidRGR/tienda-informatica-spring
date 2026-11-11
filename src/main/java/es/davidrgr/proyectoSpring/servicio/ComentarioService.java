@@ -6,6 +6,7 @@ import es.davidrgr.proyectoSpring.modelo.Usuario;
 import es.davidrgr.proyectoSpring.repositorio.ArticuloRepository;
 import es.davidrgr.proyectoSpring.repositorio.ComentarioRepository;
 import es.davidrgr.proyectoSpring.repositorio.UsuarioRepository;
+import es.davidrgr.proyectoSpring.seguridad.Auditable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,7 @@ public class ComentarioService {
 
 	}
 
+	@Auditable(accion = "MODERAR", entidad = "Comentario", campo = "visible")
 	@Transactional
 	public boolean alternarVisible(Long id) {
 		Comentario comentario = comentarioRepository.findById(id).orElseThrow();
