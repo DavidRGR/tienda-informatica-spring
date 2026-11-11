@@ -5,13 +5,16 @@ Proyecto de portfolio: una tienda online de componentes y periféricos informát
 **Funcionalidades**
 - Catálogo de artículos con marcas, categorías y subcategorías (opcional)
 - Dos tipos de usuario:
-  - **Comprador**: Ve el catálogo, simula compras de varios artículos, y puede comentar los artículos. (En caso de que los haya comprado saldrá como compra verificada)
-  - **Administrador**: Añade artículos y crea categorías, que aparecen automáticamente en los menús
+  - **Comprador**: ve el catálogo, simula compras de varios artículos y puede comentar los artículos (un comentario por artículo). Si los ha comprado, su comentario aparece como compra verificada
+  - **Administrador**: añade artículos y crea categorías, que aparecen automáticamente en los menús
 - Un usuario puede tener ambos roles
+- **Auditoría**:
+  - Registro de acciones (usuario, fecha, acción y entidad afectada) en una tabla propia
+  - Cada artículo guarda quién lo creó y modificó por última vez, y cuándo
 
 **Tecnologías**
 
-Java 25 · Spring Boot 4.1 · Spring Security · Hibernate/JPA · AspectJ · PostgreSQL · Maven · Lombok
+Java 25 · Spring Boot 4.1 · Spring Security (roles Comprador y Administrador) · Hibernate/JPA · AspectJ · PostgreSQL · Maven · Lombok
 
 **Modelo de datos**
 ```mermaid
@@ -93,5 +96,14 @@ erDiagram
     text texto
     timestamp fecha
     boolean visible
+  }
+  AUDITORIA {
+    bigint id_auditoria PK
+    timestamp fecha
+    varchar usuario
+    varchar accion
+    varchar entidad
+    bigint id_entidad
+    varchar detalle
   }
 ```
