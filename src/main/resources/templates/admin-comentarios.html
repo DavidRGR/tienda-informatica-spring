@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Moderación')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<ul th:replace="~{fragments/base :: adminMenu('comentarios')}"></ul>
+
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+
+	<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+		<div>
+			<h1 class="h3 fw-bold mb-0">Moderación de comentarios</h1>
+			<span class="text-muted small" th:text="${pagina.totalElements} + ' comentarios'">0 comentarios</span>
+		</div>
+
+		<div class="btn-group btn-group-sm" role="group" aria-label="Filtrar por estado">
+			<a th:href="@{/admin/comentarios(estado='todos')}" class="btn btn-outline-secondary"
+			   th:classappend="${estado == 'todos'} ? 'active'">Todos</a>
+			<a th:href="@{/admin/comentarios(estado='visibles')}" class="btn btn-outline-secondary"
+			   th:classappend="${estado == 'visibles'} ? 'active'">Visibles</a>
+			<a th:href="@{/admin/comentarios(estado='ocultos')}" class="btn btn-outline-secondary"
+			   th:classappend="${estado == 'ocultos'} ? 'active'">Ocultos</a>
+		</div>
+	</div>
+
+	<div th:if="${pagina.isEmpty()}" class="alert alert-info">No hay comentarios en esta sección.</div>
+
+	<div class="table-responsive" th:unless="${pagina.isEmpty()}">
+		<table class="table table-hover align-middle small">
+			<thead>
+			<tr>
+				<th>Fecha</th>
+				<th>Artículo</th>
+				<th>Autor</th>
+				<th>Valoración</th>
+				<th>Comentario</th>
+				<th>Estado</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="c : ${pagina.content}" th:classappend="${!c.visible()} ? 'table-secondary'">
+				<td class="text-nowrap" th:text="${#temporals.format(c.fecha(), 'dd/MM/yyyy HH:mm')}">fecha</td>
+				<td>
+					<a th:if="${c.articuloActivo()}"
+					   th:href="@{/articulos/{id}(id=${c.idArticulo()})} + '#comentarios'"
+					   th:text="${c.articulo()}">Artículo</a>
+					<span th:unless="${c.articuloActivo()}" class="text-muted"
+						  th:text="${c.articulo()} + ' (desactivado)'">Artículo</span>
+				</td>
+				<td th:text="${c.autor()}">Autor</td>
+				<td class="text-nowrap">
+					<span th:replace="~{fragments/estrellas :: estrellas(${c.valoracion()})}"></span>
+				</td>
+				<td style="min-width: 220px" th:title="${c.texto()}"
+					th:text="${#strings.abbreviate(c.texto(), 160)}">Texto</td>
+				<td>
+					<span class="badge text-bg-success" th:if="${c.visible()}">Visible</span>
+					<span class="badge text-bg-secondary" th:unless="${c.visible()}">Oculto</span>
+				</td>
+				<td class="text-end">
+					<form th:action="@{/admin/comentarios/{id}/visible(id=${c.id()})}" method="post">
+						<input type="hidden" name="estado" th:value="${estado}">
+						<input type="hidden" name="pagina" th:value="${pagina.number}">
+						<button type="submit" class="btn btn-sm"
+								th:classappend="${c.visible()} ? 'btn-outline-danger' : 'btn-outline-success'"
+								th:text="${c.visible()} ? 'Ocultar' : 'Mostrar'">Ocultar</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<nav th:if="${pagina.totalPages > 1}" class="mt-4" aria-label="Paginación">
+		<ul class="pagination justify-content-center flex-wrap">
+			<li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number - 1})}">&laquo;</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+				th:classappend="${i == pagina.number} ? 'active'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${i})}" th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
+				<a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number + 1})}">&raquo;</a>
+			</li>
+		</ul>
+	</nav>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

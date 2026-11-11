@@ -60,4 +60,11 @@ public class ComentarioService {
 
 	}
 
+	@Transactional
+	public boolean alternarVisible(Long id) {
+		Comentario comentario = comentarioRepository.findById(id).orElseThrow();
+		comentario.setVisible(!comentario.isVisible());
+		return comentario.isVisible();
+	}
+
 }

@@ -328,3 +328,10 @@ body:has(> .pie-pagina) {
 .pagina-legal {
 	max-width: 800px;
 }
+
+.nav-pills .nav-link.active {
+	background-color: var(--tienda-naranja);
+}
+.nav-pills .nav-link {
+	color: #495057;
+}

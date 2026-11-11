@@ -1,9 +1,12 @@
 package es.davidrgr.proyectoSpring.repositorio;
 
+import es.davidrgr.proyectoSpring.dto.ComentarioAdmin;
 import es.davidrgr.proyectoSpring.dto.ComentarioVista;
 import es.davidrgr.proyectoSpring.dto.ResumenValoracion;
 import es.davidrgr.proyectoSpring.modelo.Comentario;
 import es.davidrgr.proyectoSpring.modelo.EstadoCompra;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,4 +39,17 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
 			where c.articulo.idArticulo = :idArticulo and c.visible = true
 			""")
 	ResumenValoracion resumen(@Param("idArticulo") Long idArticulo);
+
+	@Query(value = """
+		select new es.davidrgr.proyectoSpring.dto.ComentarioAdmin(
+			c.idComentario, a.idArticulo, a.nombre, a.activo, u.nombre,
+			c.valoracion, c.texto, c.fecha, c.visible)
+		from Comentario c
+		join c.articulo a
+		join c.usuario u
+		where (:todos = true or c.visible = :visible)
+		""",
+			countQuery = "select count(c) from Comentario c where (:todos = true or c.visible = :visible)")
+	Page<ComentarioAdmin> buscarAdmin(@Param("todos") boolean todos, @Param("visible") boolean visible,
+									  Pageable pageable);
 }

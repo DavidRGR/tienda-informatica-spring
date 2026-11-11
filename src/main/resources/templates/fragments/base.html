@@ -130,6 +130,17 @@
 	</div>
 </footer>
 
+<ul th:fragment="adminMenu(activo)" class="nav nav-pills mb-4">
+	<li class="nav-item">
+		<a class="nav-link" th:classappend="${activo == 'articulos'} ? 'active'"
+		   th:href="@{/admin/articulos}"><i class="bi bi-box-seam"></i> Artículos</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" th:classappend="${activo == 'comentarios'} ? 'active'"
+		   th:href="@{/admin/comentarios}"><i class="bi bi-chat-dots"></i> Comentarios</a>
+	</li>
+</ul>
+
 <th:block th:fragment="scripts">
 	<div th:if="${esComprador}" class="offcanvas offcanvas-end" tabindex="-1" id="panelCarrito"
 		 aria-labelledby="panelCarritoTitulo">
