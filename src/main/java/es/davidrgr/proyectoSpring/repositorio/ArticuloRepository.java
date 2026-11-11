@@ -16,6 +16,12 @@ import java.util.Optional;
 
 public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
+	long countByMarcaIdMarca(Long idMarca);
+
+	long countByCategoriaIdCategoria(Long idCategoria);
+
+	long countBySubcategoriaIdSubcategoria(Long idSubcategoria);
+
 	String TARJETA = """
 		select new es.davidrgr.proyectoSpring.dto.ArticuloTarjeta(
 			a.idArticulo, a.nombre, a.precio, a.imagenUrl, a.stock, m.nombre,

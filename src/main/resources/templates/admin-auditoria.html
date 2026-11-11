@@ -41,6 +41,7 @@
 				<td th:switch="${r.accion}">
 					<span th:case="'CREAR'" class="badge text-bg-success">Creó</span>
 					<span th:case="'EDITAR'" class="badge text-bg-primary">Editó</span>
+					<span th:case="'ELIMINAR'" class="badge text-bg-danger">Eliminó</span>
 					<span th:case="'CAMBIAR_ESTADO'" class="badge text-bg-warning">Cambió el estado</span>
 					<span th:case="'MODERAR'" class="badge text-bg-info">Moderó</span>
 					<span th:case="*" class="badge text-bg-secondary" th:text="${r.accion}">acción</span>

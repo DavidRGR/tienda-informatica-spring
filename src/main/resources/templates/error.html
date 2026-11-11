@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Error')}"></head>
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+<th:block th:with="grave=${status != null and status >= 500}">
+	<main th:replace="~{fragments/base :: error(${status}, ${grave} ? 'Algo ha ido mal' : 'No se ha podido completar la petición', ${grave} ? 'Ha ocurrido un error inesperado en el servidor. Inténtalo de nuevo en unos minutos.' : 'La petición no es válida.', ${grave} ? 'bi-exclamation-triangle' : 'bi-question-circle')}"></main>
+</th:block>
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

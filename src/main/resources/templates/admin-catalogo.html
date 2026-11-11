@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Catálogo')}"></head>
+
+<body>
+<nav th:replace="~{fragments/base :: navbar}"></nav>
+
+<main class="container my-4">
+	<ul th:replace="~{fragments/base :: adminMenu('catalogo')}"></ul>
+
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+	<div class="row g-4">
+
+		<!-- Marcas -->
+		<div class="col-lg-5">
+			<div class="card">
+				<div class="card-header fw-bold"><i class="bi bi-award"></i> Marcas</div>
+				<div class="card-body">
+					<form th:action="@{/admin/catalogo/marcas}" method="post" class="d-flex gap-2 mb-3">
+						<input type="text" name="nombre" class="form-control form-control-sm"
+							   placeholder="Nueva marca" maxlength="100" required aria-label="Nueva marca">
+						<button type="submit" class="btn btn-sm btn-tienda text-nowrap"><i class="bi bi-plus-lg"></i> Añadir</button>
+					</form>
+
+					<p class="text-muted small mb-0" th:if="${marcas.isEmpty()}">Todavía no hay marcas.</p>
+
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item px-0 d-flex align-items-center gap-2" th:each="m : ${marcas}">
+							<form th:action="@{/admin/catalogo/marcas/{id}(id=${m.id()})}" method="post"
+								  class="d-flex gap-1 flex-grow-1">
+								<input type="text" name="nombre" th:value="${m.nombre()}"
+									   class="form-control form-control-sm" maxlength="100" required aria-label="Nombre de la marca">
+								<button type="submit" class="btn btn-sm btn-outline-secondary" title="Guardar nombre">
+									<i class="bi bi-check-lg"></i>
+								</button>
+							</form>
+							<span class="badge text-bg-light border text-nowrap"
+								  th:text="${m.articulos()} + ' art.'">0 art.</span>
+							<form th:action="@{/admin/catalogo/marcas/{id}/eliminar(id=${m.id()})}" method="post"
+								  onsubmit="return confirm('¿Eliminar esta marca?')">
+								<button type="submit" class="btn btn-sm btn-outline-danger"
+										th:disabled="${m.articulos() > 0}"
+										th:title="${m.articulos() > 0} ? 'No se puede eliminar: tiene artículos' : 'Eliminar'">
+									<i class="bi bi-trash"></i>
+								</button>
+							</form>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- Categorías y subcategorías -->
+		<div class="col-lg-7">
+			<div class="card mb-3">
+				<div class="card-header fw-bold"><i class="bi bi-diagram-3"></i> Categorías</div>
+				<div class="card-body">
+					<form th:action="@{/admin/catalogo/categorias}" method="post" class="d-flex gap-2">
+						<input type="text" name="nombre" class="form-control form-control-sm"
+							   placeholder="Nueva categoría" maxlength="100" required aria-label="Nueva categoría">
+						<button type="submit" class="btn btn-sm btn-tienda text-nowrap"><i class="bi bi-plus-lg"></i> Añadir</button>
+					</form>
+				</div>
+			</div>
+
+			<p class="text-muted small" th:if="${categoriasAdmin.isEmpty()}">Todavía no hay categorías.</p>
+
+			<div class="card mb-3" th:each="c : ${categoriasAdmin}">
+				<div class="card-header d-flex align-items-center gap-2">
+					<form th:action="@{/admin/catalogo/categorias/{id}(id=${c.id()})}" method="post"
+						  class="d-flex gap-1 flex-grow-1">
+						<input type="text" name="nombre" th:value="${c.nombre()}"
+							   class="form-control form-control-sm fw-bold" maxlength="100" required aria-label="Nombre de la categoría">
+						<button type="submit" class="btn btn-sm btn-outline-secondary" title="Guardar nombre">
+							<i class="bi bi-check-lg"></i>
+						</button>
+					</form>
+					<span class="badge text-bg-light border text-nowrap"
+						  th:text="${c.articulos()} + ' art.'">0 art.</span>
+					<form th:action="@{/admin/catalogo/categorias/{id}/eliminar(id=${c.id()})}" method="post"
+						  onsubmit="return confirm('¿Eliminar esta categoría?')">
+						<button type="submit" class="btn btn-sm btn-outline-danger"
+								th:disabled="${!c.sePuedeEliminar()}"
+								th:title="${c.sePuedeEliminar()} ? 'Eliminar' : 'No se puede eliminar: tiene artículos o subcategorías'">
+							<i class="bi bi-trash"></i>
+						</button>
+					</form>
+				</div>
+
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item d-flex align-items-center gap-2 ps-4" th:each="s : ${c.subcategorias()}">
+						<i class="bi bi-arrow-return-right text-muted"></i>
+						<form th:action="@{/admin/catalogo/subcategorias/{id}(id=${s.id()})}" method="post"
+							  class="d-flex gap-1 flex-grow-1">
+							<input type="text" name="nombre" th:value="${s.nombre()}"
+								   class="form-control form-control-sm" maxlength="100" required aria-label="Nombre de la subcategoría">
+							<button type="submit" class="btn btn-sm btn-outline-secondary" title="Guardar nombre">
+								<i class="bi bi-check-lg"></i>
+							</button>
+						</form>
+						<span class="badge text-bg-light border text-nowrap"
+							  th:text="${s.articulos()} + ' art.'">0 art.</span>
+						<form th:action="@{/admin/catalogo/subcategorias/{id}/eliminar(id=${s.id()})}" method="post"
+							  onsubmit="return confirm('¿Eliminar esta subcategoría?')">
+							<button type="submit" class="btn btn-sm btn-outline-danger"
+									th:disabled="${s.articulos() > 0}"
+									th:title="${s.articulos() > 0} ? 'No se puede eliminar: tiene artículos' : 'Eliminar'">
+								<i class="bi bi-trash"></i>
+							</button>
+						</form>
+					</li>
+					<li class="list-group-item ps-4">
+						<form th:action="@{/admin/catalogo/categorias/{id}/subcategorias(id=${c.id()})}" method="post"
+							  class="d-flex gap-2">
+							<input type="text" name="nombre" class="form-control form-control-sm"
+								   placeholder="Nueva subcategoría" maxlength="100" required aria-label="Nueva subcategoría">
+							<button type="submit" class="btn btn-sm btn-outline-secondary text-nowrap">
+								<i class="bi bi-plus-lg"></i> Añadir
+							</button>
+						</form>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</main>
+
+<footer th:replace="~{fragments/base :: pie}"></footer>
+<script th:replace="~{fragments/base :: scripts}"></script>
+</body>
+</html>

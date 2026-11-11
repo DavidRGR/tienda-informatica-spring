@@ -1,8 +1,10 @@
 package es.davidrgr.proyectoSpring.repositorio;
 
+import es.davidrgr.proyectoSpring.dto.CategoriaFila;
 import es.davidrgr.proyectoSpring.modelo.Categoria;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,4 +19,15 @@ public interface CategoriaRepository extends JpaRepository<Categoria,Long> {
 	@EntityGraph(attributePaths = "subcategorias")
 	List<Categoria> findAllByOrderByNombreAsc();
 
+	@Query("""
+		select new es.davidrgr.proyectoSpring.dto.CategoriaFila(
+			c.idCategoria, c.nombre, (select count(a) from Articulo a where a.categoria = c))
+		from Categoria c
+		order by lower(c.nombre)
+		""")
+	List<CategoriaFila> listarAdmin();
+
+	boolean existsByNombreIgnoreCase(String nombre);
+
+	boolean existsByNombreIgnoreCaseAndIdCategoriaNot(String nombre, Long idCategoria);
 }
