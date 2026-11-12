@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Carpetas que no se suben al proyecto ###
+.env
+uploads/

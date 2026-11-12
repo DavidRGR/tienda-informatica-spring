@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: tiendaspring
+      POSTGRES_USER: david
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en el archivo .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Los scripts solo se ejecutan la primera vez, cuando la base de datos está vacía.
+      # Para no cargar el catálogo de ejemplo, borra o comenta la última línea.
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/datos-ejemplo.sql:/docker-entrypoint-initdb.d/02-datos-ejemplo.sql:ro
+    healthcheck:
+      # Se comprueba por TCP (127.0.0.1): durante la carga de los scripts el servidor
+      # temporal solo escucha por socket, y así no se da por listo antes de tiempo
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U david -d tiendaspring"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tiendaspring
+      DB_PASSWORD: ${DB_PASSWORD}
+      ADMIN_CODE: ${ADMIN_CODE:?Define ADMIN_CODE en el archivo .env}
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
