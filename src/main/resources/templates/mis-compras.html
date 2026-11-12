@@ -8,6 +8,9 @@
 <main class="container my-4">
 	<h1 class="h3 fw-bold mb-4">Mis compras</h1>
 
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
 	<div th:if="${compras.isEmpty()}" class="text-center py-5">
 		<i class="bi bi-bag display-3 text-muted"></i>
 		<p class="lead mt-3">Todavía no has hecho ninguna compra</p>
@@ -32,16 +35,20 @@
 				<td th:text="${c.fecha() != null} ? ${#temporals.format(c.fecha(), 'dd/MM/yyyy HH:mm')} : '—'">fecha</td>
 				<td th:text="${c.unidades()}">0</td>
 				<td>
-						<span class="badge"
-							  th:classappend="${c.estado().name() == 'PAGADA'} ? 'bg-success' : 'bg-secondary'"
-							  th:text="${c.estado()}">PAGADA</span>
+					<span class="badge"
+						  th:classappend="${c.estado().name() == 'PAGADA'} ? 'bg-success' : (${c.estado().name() == 'CANCELADA'} ? 'bg-danger' : 'bg-secondary')"
+						  th:text="${c.estado()}">PAGADA</span>
 				</td>
 				<td class="text-end fw-semibold"
 					th:text="${#numbers.formatDecimal(c.total(), 1, 'POINT', 2, 'COMMA')} + ' €'">0 €</td>
-				<td class="text-end">
-					<a th:href="@{/compras/{id}(id=${c.id()})}" class="btn btn-sm btn-outline-secondary">
-						Ver detalle
-					</a>
+				<td class="text-end text-nowrap">
+					<a th:href="@{/compras/{id}(id=${c.id()})}" class="btn btn-sm btn-outline-secondary">Ver detalle</a>
+					<form th:if="${c.estado().name() == 'PAGADA'}" th:action="@{/compras/{id}/cancelar(id=${c.id()})}"
+						  method="post" class="d-inline"
+						  onsubmit="return confirm('¿Cancelar esta compra? Los artículos volverán al stock.')">
+						<input type="hidden" name="origen" value="lista">
+						<button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+					</form>
 				</td>
 			</tr>
 			</tbody>

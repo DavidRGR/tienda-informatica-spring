@@ -37,4 +37,8 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
 		""")
 	List<CompraResumen> resumenes(@Param("correo") String correo, @Param("excluido") EstadoCompra excluido);
 
+	// Bloquea la compra para que dos cancelaciones simultáneas no devuelvan el stock dos veces
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select c from Compra c where c.idCompra = :id and c.usuario.correo = :correo")
+	Optional<Compra> bloquearPropia(@Param("id") Long id, @Param("correo") String correo);
 }

@@ -6,9 +6,19 @@
 <nav th:replace="~{fragments/base :: navbar}"></nav>
 
 <main class="container my-4">
+	<div th:if="${aviso}" class="alert alert-success" th:text="${aviso}"></div>
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
 	<div class="text-center mb-4">
-		<i class="bi bi-check-circle-fill display-3 text-success"></i>
-		<h1 class="h3 fw-bold mt-2">¡Gracias por tu compra!</h1>
+		<th:block th:if="${compra.estado.name() == 'CANCELADA'}">
+			<i class="bi bi-x-circle-fill display-3 text-danger"></i>
+			<h1 class="h3 fw-bold mt-2">Compra cancelada</h1>
+			<p class="text-muted mb-1">Los artículos han vuelto al stock. Es una simulación: no hay ningún reembolso real.</p>
+		</th:block>
+		<th:block th:unless="${compra.estado.name() == 'CANCELADA'}">
+			<i class="bi bi-check-circle-fill display-3 text-success"></i>
+			<h1 class="h3 fw-bold mt-2">¡Gracias por tu compra!</h1>
+		</th:block>
 		<p class="text-muted mb-0">
 			Pedido nº <strong th:text="${compra.idCompra}">1</strong> ·
 			<span th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}">fecha</span> ·
@@ -54,6 +64,11 @@
 
 	<div class="text-center mt-4 d-flex justify-content-center gap-2">
 		<a th:href="@{/compras}" class="btn btn-outline-secondary px-4">Mis compras</a>
+		<form th:if="${compra.estado.name() == 'PAGADA'}" th:action="@{/compras/{id}/cancelar(id=${compra.idCompra})}"
+			  method="post" class="d-inline"
+			  onsubmit="return confirm('¿Cancelar esta compra? Los artículos volverán al stock.')">
+			<button type="submit" class="btn btn-outline-danger px-4">Cancelar compra</button>
+		</form>
 		<a th:href="@{/articulos}" class="btn btn-tienda px-4">Seguir comprando</a>
 	</div>
 </main>

@@ -137,7 +137,24 @@ public class CarritoService {
 		carrito.setFecha(LocalDateTime.now());
 		return carrito.getIdCompra();
 
+	}
 
+	@Transactional
+	public void cancelar(String correo, Long idCompra) {
+		Compra compra = compraRepository.bloquearPropia(idCompra, correo).orElseThrow();
+		if (compra.getEstado() != EstadoCompra.PAGADA) {
+			throw new CarritoException("Solo se pueden cancelar las compras pagadas");
+		}
+
+		// Mismo orden fijo que al finalizar, para evitar interbloqueos entre operaciones simultáneas
+		List<DetalleCompra> lineas = new ArrayList<>(compra.getDetalles());
+		lineas.sort(Comparator.comparing(d -> d.getArticulo().getIdArticulo()));
+
+		for (DetalleCompra linea : lineas) {
+			Articulo articulo = articuloRepository.bloquear(linea.getArticulo().getIdArticulo()).orElseThrow();
+			articulo.setStock(articulo.getStock() + linea.getCantidad());
+		}
+		compra.setEstado(EstadoCompra.CANCELADA);
 	}
 
 
