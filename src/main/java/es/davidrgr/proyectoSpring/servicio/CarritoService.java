@@ -111,7 +111,7 @@ public class CarritoService {
 				.stream().findFirst()
 				.orElseThrow(() -> new CarritoException("Tu carrito está vacio"));
 		if (carrito.getDetalles().isEmpty()) {
-			throw new CarritoException("Tu carrito está vacio");
+			throw new CarritoException("Tu carrito está vacío");
 		}
 
 		// Orden fijo por id de artículo para evitar interbloqueos entre compras simultáneas
