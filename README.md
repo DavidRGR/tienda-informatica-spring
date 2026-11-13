@@ -241,12 +241,41 @@ docker/            Dockerfile de la aplicación (el docker-compose.yml va en la 
 
 ## Capturas
 
-<!-- Añade aquí tus capturas, por ejemplo: -->
-<!-- ![Catálogo](docs/catalogo.png) -->
-<!-- ![Detalle de artículo](docs/detalle.png) -->
-<!-- ![Carrito](docs/carrito.png) -->
-<!-- ![Mis compras](docs/compras.png) -->
-<!-- ![Panel de administración](docs/admin.png) -->
+**General**
+- Página de inicio
+![Inicio](docs/inicio.png)
+- Catalogo
+![Catalogo](docs/catalogo.png)
+- Detalles de artículo sin sesión
+![Detalles de artículo sin sesión](docs/detalleArticuloSS.png)
+- Página de inicio de sesión
+![Página de inicio de sesión](docs/inicioSesion.png)
+
+**Comprador**
+- Página de creación de cuentas de usuarios compradores
+![Página de creación de cuentas de usuarios compradores](docs/crearCuentaUsu.png)
+- Detalles de artículo
+![Detalles de artículo](docs/detalleArticulo.png)
+- Carrito
+![Carrito](docs/carrito.png)
+- Compras
+![Compra](docs/compra.png)
+- Historial de compras
+![Historial de compras](docs/historialCompras.png)
+
+**Administrador**
+- Página de creación de cuentas de usuarios administradores (Empleados)
+  ![Página de creación de cuentas de usuarios administradores (Empleados)](docs/crearCuentaAdmin.png)
+- Panel de administración de artículos
+![Panel de administración de artículos](docs/panelAdminArt.png)
+- Panel de administración de artículos
+![Panel de administración de artículos](docs/panelAdminArt.png)
+- Panel de administración de comentarios
+![Panel de administración de comentarios](docs/panelAdminCom.png)
+- Panel de administración de categorías
+![Panel de administración de categorías](docs/panelAdminCat.png)
+- Panel de administración de registro de actividad
+![Panel de administración de registro de actividad](docs/registro.png)
 
 ## Limitaciones conocidas
 
