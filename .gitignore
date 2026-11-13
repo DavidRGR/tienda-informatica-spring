@@ -37,5 +37,7 @@ build/
 .env.*
 !.env.example
 uploads/
+uploads/*
+!uploads/.gitkeep
 .DS_Store
 Thumbs.db
