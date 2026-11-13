@@ -9,7 +9,7 @@ Proyecto de portfolio: una tienda online de componentes y periféricos informát
 - Ficha de artículo con foto, stock, descripción, opiniones y media de estrellas.
 - Comentarios con valoración de 1 a 5 estrellas, con la insignia de «compra verificada» si el autor ha comprado el artículo.
 - Carrito en un panel lateral, sin salir de la página, y finalización de compra simulada.
-- Historial de compras.
+- Historial de compras, con cancelación de las compras pagadas (el stock vuelve a los artículos).
 
 **Administrador (empleado)**
 - Alta y edición de artículos, con subida de foto; los artículos se desactivan en lugar de borrarse.
@@ -24,21 +24,34 @@ Proyecto de portfolio: una tienda online de componentes y periféricos informát
 
 ## Tecnologías
 
-Java 25 · Spring Boot 4.1 · Spring Security · Spring Data JPA / Hibernate · AspectJ · Thymeleaf · Bootstrap 5 · PostgreSQL · Maven · Lombok · Docker
+Java 25 · Spring Boot 4.1 · Spring Security · Spring Data JPA / Hibernate · AspectJ · Thymeleaf · Bootstrap 5 · PostgreSQL · Maven · Lombok · Docker · JUnit 5 · Mockito
 
 ## Puesta en marcha con Docker
 
 Es la forma más rápida: no necesitas instalar JDK ni PostgreSQL, solo Docker.
 
 ```bash
-cp .env.example .env     # y edita DB_PASSWORD y ADMIN_CODE
+cp .env.example .env
+```
+
+Edita `.env` y elige tus valores:
+
+| Variable | Para qué sirve |
+|---|---|
+| `DB_PASSWORD` | Contraseña de la base de datos (la eliges tú) |
+| `ADMIN_CODE` | Código de empleados: lo eliges tú y lo tendrás que escribir al crear una cuenta de administrador |
+
+```bash
 docker compose up --build
 ```
 
 La primera vez, Docker compila la aplicación, crea la base de datos y carga `database/schema.sql` y `database/datos-ejemplo.sql`. Después, la aplicación queda en <http://localhost:8080>.
 
+**Primeras cuentas:** el script no incluye usuarios, porque las contraseñas se guardan cifradas. Crea un comprador en `/registro` y un administrador en `/registro-admin`, escribiendo el `ADMIN_CODE` que pusiste en `.env`.
+
 - **Datos persistentes:** la base de datos y las fotos subidas se guardan en volúmenes de Docker (`pgdata` y `uploads`), así que sobreviven a reinicios.
 - **Parar:** `docker compose down`. Para borrar también los datos y volver a empezar de cero: `docker compose down -v`.
+- **Cambiar `DB_PASSWORD` después del primer arranque:** el volumen conserva la contraseña antigua, así que hay que recrearlo con `docker compose down -v`.
 - **Sin catálogo de ejemplo:** comenta la línea de `datos-ejemplo.sql` en `docker-compose.yml` antes del primer arranque.
 - Los scripts SQL solo se ejecutan cuando la base de datos está vacía. Si cambias `schema.sql` después, hay que recrear el volumen con `down -v`.
 
@@ -95,6 +108,18 @@ El script no incluye usuarios, porque las contraseñas se guardan cifradas. Cré
 - **Comprador:** `/registro`.
 - **Administrador:** `/registro-admin`, con el valor de `ADMIN_CODE`. El enlace «Acceso de empleados» está en el pie de página.
 - **Los dos roles en la misma cuenta:** registra el mismo correo en ambas pantallas, escribiendo la contraseña actual de la cuenta.
+
+## Pruebas
+
+Pruebas unitarias con JUnit 5 y Mockito. No necesitan base de datos ni Docker:
+
+```bash
+./mvnw test -Dtest='!ProyectoSpringApplicationTests'
+```
+
+Cubren el carrito (stock, precios, finalizar y cancelar), el límite de intentos de acceso, la validación de imágenes, las cuentas y roles, y los permisos sobre compras ajenas.
+
+`ProyectoSpringApplicationTests` arranca toda la aplicación, por lo que necesita PostgreSQL y las variables `DB_PASSWORD` y `ADMIN_CODE`.
 
 ## Modelo de datos
 
@@ -187,6 +212,7 @@ La tabla `auditoria` (registro de actividad) no tiene relaciones: guarda el corr
 - **El carrito es una compra en estado `PENDIENTE`.** Persiste entre sesiones y reutiliza las mismas tablas. Al finalizar pasa a `PAGADA`.
 - **Los precios se fijan al pagar.** En el carrito se ve el precio actual, y al finalizar se guarda en `precio_unitario`, así las compras antiguas no cambian si el precio sube.
 - **El stock se descuenta al finalizar,** con bloqueo de las filas afectadas para que dos compras simultáneas no vendan más unidades de las que hay.
+- **La cancelación devuelve el stock** en una sola transacción, con la compra bloqueada para que dos cancelaciones simultáneas no lo devuelvan dos veces. Solo se pueden cancelar compras pagadas y propias.
 - **Subcategoría opcional con integridad garantizada:** una clave foránea compuesta `(id_categoria, id_subcategoria)` impide que un artículo tenga una subcategoría de otra categoría.
 - **Los artículos no se borran, se desactivan,** para no romper compras y comentarios antiguos.
 - **Auditoría en dos capas:** Spring Data JPA rellena `creado_por` y `modificado_por` en cada artículo, y un aspecto de AspectJ (`@Auditable`) guarda el historial de acciones.
@@ -208,6 +234,7 @@ src/main/java/es/davidrgr/proyectoSpring/
 src/main/resources/
 ├── templates/     Plantillas Thymeleaf (con fragmentos reutilizables en fragments/)
 └── static/        CSS, JavaScript e imágenes
+src/test/java/     Pruebas unitarias (JUnit 5 y Mockito)
 database/          Scripts SQL (esquema y datos de ejemplo)
 docker/            Dockerfile de la aplicación (el docker-compose.yml va en la raíz)
 ```
@@ -216,11 +243,15 @@ docker/            Dockerfile de la aplicación (el docker-compose.yml va en la 
 
 <!-- Añade aquí tus capturas, por ejemplo: -->
 <!-- ![Catálogo](docs/catalogo.png) -->
+<!-- ![Detalle de artículo](docs/detalle.png) -->
+<!-- ![Carrito](docs/carrito.png) -->
+<!-- ![Mis compras](docs/compras.png) -->
 <!-- ![Panel de administración](docs/admin.png) -->
 
 ## Limitaciones conocidas
 
 - Es una simulación: no hay pasarela de pago ni gestión de envíos.
+- Es un proyecto de demostración: el código de empleados (`ADMIN_CODE`) lo elige quien despliega, y con un valor débil cualquiera podría crearse una cuenta de administrador.
 - El contador de intentos de acceso está en memoria: se reinicia al apagar la aplicación y no vale para varias instancias.
 - Las fotos subidas se guardan en una carpeta local (`uploads/`), que no está en el repositorio.
-- No hay pruebas automáticas todavía.
+- Solo hay pruebas unitarias: no hay pruebas de integración ni de los controladores.
