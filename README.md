@@ -1,5 +1,7 @@
 # TiendaPC · Tienda de informática
 
+[![Tests](https://github.com/DavidRGR/tienda-informatica-spring/actions/workflows/tests.yml/badge.svg)](https://github.com/DavidRGR/tienda-informatica-spring/actions/workflows/tests.yml)
+
 Proyecto de portfolio: una tienda online de componentes y periféricos informáticos, inspirada en PcComponentes. **Es una tienda ficticia con fines educativos**: no se realizan cobros ni envíos reales.
 
 ## Funcionalidades
