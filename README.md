@@ -112,6 +112,7 @@ El script no incluye usuarios, porque las contraseñas se guardan cifradas. Cré
 ## Pruebas
 
 Pruebas unitarias con JUnit 5 y Mockito. No necesitan base de datos ni Docker:
+También hay pruebas de la capa web (@WebMvcTest) que comprueban los permisos por rol y los formularios de registro, sin arrancar la base de datos.
 
 ```bash
 ./mvnw test -Dtest='!ProyectoSpringApplicationTests'
@@ -241,41 +242,67 @@ docker/            Dockerfile de la aplicación (el docker-compose.yml va en la 
 
 ## Capturas
 
-**General**
-- Página de inicio
-![Inicio](docs/inicio.png)
-- Catalogo
-![Catalogo](docs/catalogo.png)
-- Detalles de artículo sin sesión
-![Detalles de artículo sin sesión](docs/detalleArticuloSS.png)
-- Página de inicio de sesión
-![Página de inicio de sesión](docs/inicioSesion.png)
+### General
 
-**Comprador**
-- Página de creación de cuentas de usuarios compradores
-![Página de creación de cuentas de usuarios compradores](docs/crearCuentaUsu.png)
-- Detalles de artículo
-![Detalles de artículo](docs/detalleArticulo.png)
-- Carrito
-![Carrito](docs/carrito.png)
-- Compras
-![Compra](docs/compra.png)
-- Historial de compras
-![Historial de compras](docs/historialCompras.png)
+**Inicio**
 
-**Administrador**
-- Página de creación de cuentas de usuarios administradores (Empleados)
-  ![Página de creación de cuentas de usuarios administradores (Empleados)](docs/crearCuentaAdmin.png)
-- Panel de administración de artículos
-![Panel de administración de artículos](docs/panelAdminArt.png)
-- Panel de administración de artículos
-![Panel de administración de artículos](docs/panelAdminArt.png)
-- Panel de administración de comentarios
-![Panel de administración de comentarios](docs/panelAdminCom.png)
-- Panel de administración de categorías
-![Panel de administración de categorías](docs/panelAdminCat.png)
-- Panel de administración de registro de actividad
-![Panel de administración de registro de actividad](docs/registro.png)
+<img src="docs/inicio.png" width="800" alt="Página de inicio">
+
+**Catálogo**
+
+<img src="docs/catalogo.png" width="800" alt="Catálogo">
+
+**Detalle de artículo sin sesión**
+
+<img src="docs/detalleArticuloSS.png" width="800" alt="Detalle de artículo sin sesión">
+
+**Inicio de sesión**
+
+<img src="docs/inicioSesion.png" width="800" alt="Página de inicio de sesión">
+
+### Comprador
+
+**Creación de cuenta de comprador**
+
+<img src="docs/crearCuentaUsu.png" width="800" alt="Creación de cuenta de comprador">
+
+**Detalle de artículo**
+
+<img src="docs/detalleArticulo.png" width="800" alt="Detalle de artículo">
+
+**Carrito**
+
+<img src="docs/carrito.png" width="800" alt="Carrito">
+
+**Compra realizada**
+
+<img src="docs/compra.png" width="800" alt="Compra realizada">
+
+**Historial de compras**
+
+<img src="docs/historialCompras.png" width="800" alt="Historial de compras">
+
+### Administrador
+
+**Creación de cuenta de empleado**
+
+<img src="docs/crearCuentaAdmin.png" width="800" alt="Creación de cuenta de empleado">
+
+**Panel de artículos**
+
+<img src="docs/panelAdminArt.png" width="800" alt="Panel de administración de artículos">
+
+**Panel de comentarios**
+
+<img src="docs/panelAdminCom.png" width="800" alt="Panel de administración de comentarios">
+
+**Panel de categorías**
+
+<img src="docs/panelAdminCat.png" width="800" alt="Panel de administración de categorías">
+
+**Registro de actividad**
+
+<img src="docs/registro.png" width="800" alt="Registro de actividad">
 
 ## Limitaciones conocidas
 
@@ -283,4 +310,4 @@ docker/            Dockerfile de la aplicación (el docker-compose.yml va en la 
 - Es un proyecto de demostración: el código de empleados (`ADMIN_CODE`) lo elige quien despliega, y con un valor débil cualquiera podría crearse una cuenta de administrador.
 - El contador de intentos de acceso está en memoria: se reinicia al apagar la aplicación y no vale para varias instancias.
 - Las fotos subidas se guardan en una carpeta local (`uploads/`), que no está en el repositorio.
-- Solo hay pruebas unitarias: no hay pruebas de integración ni de los controladores.
+- No hay pruebas de integración con base de datos.
